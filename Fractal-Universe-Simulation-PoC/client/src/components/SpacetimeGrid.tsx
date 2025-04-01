@@ -22,6 +22,7 @@ export default function SpacetimeGrid() {
     addRandomEnergy,
     curDirectionIndex,
     incrementCurrentDirectionIndex,
+    directionMode,
   } = useSimulation();
 
   const { viewport, camera } = useThree();
@@ -87,13 +88,22 @@ export default function SpacetimeGrid() {
       { x: -1, y: 0 },
       { x: 1, y: 0 },
     ];
-    // const randomDirection =
-    //   directions[Math.floor(Math.random() * directions.length)];
-    const randomDirection = directions[curDirectionIndex]
+    let direction;
+    if (directionMode === 'cycle') {
+      direction = directions[curDirectionIndex];
+    } else {
+
+      direction = {
+        up: directions[2],
+        down: directions[3],
+        left: directions[1],
+        right: directions[0]
+      }[directionMode];
+    }
 
     addEnergy({
       position: { x: point.x, y: point.y },
-      velocity: randomDirection,
+      velocity: direction,
       size: energySize,
     });
   };
