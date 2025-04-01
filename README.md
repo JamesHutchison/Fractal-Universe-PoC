@@ -1,4 +1,5 @@
 # Fractal-Universe-PoC
+
 Fractal Universe Proof-of-Concept
 
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-1.png)
@@ -7,6 +8,7 @@ This is a Fractal Universe Simulation that runs as a web server. It was original
 of me manually making changes and gave me the boot and zip file with my code. I then pushed it here.
 
 The fractal universe simulator is based on a very simple theory:
+
 - The universe has two occupying states - spacetime, or energy
 - Energy moves through spacetime and displaces it. As it does so, it leaves remnants behind.
 - This displacement creates propagation waves. The propagation waves "heal" spacetime by pushing back (creates a pressure)
@@ -24,6 +26,7 @@ This also doubles as general purpose field simulator, in case you have the need 
 In my opinion this is crude and is intended to demonstrate the concept - much in the same way a petri dish and bacteria can demonstrate evolution.
 
 ## How to Start
+
 If you already have a github account simply create a codespace, run the task "install dependencies", then run the run configuration "Debug npm run dev"
 
 ## Usage
@@ -31,9 +34,11 @@ If you already have a github account simply create a codespace, run the task "in
 Thus, there's a bunch of knobs around this. There's no wrong answer. Certain ranges are a sweet spot for stability.
 
 To move towards cosmic scale on the fractal:
+
 - Turn healing rate to 0 or near 0. Reduce displacement and propagation rate. Reduce speeds.
 
 To move twoards quantum scale on the fractal:
+
 - Increase displacement strength, forward resistance, reduce propagation rate, increase falloff rate, and increase healing rate
 
 You'll find that certain configurations are much more stable than others. It is my belief there's an intrinsic mechanism that
@@ -58,3 +63,10 @@ resistance, it would always slow down (or speed up) to the same speed. This inci
 100% sure it was actually a real thing or bug that I overlooked. Remove the speed normalization to give it a try. It doesn't slow down quite like
 it used to due to many physics changes and fixes since I took it out. I guess if we discover that 1% of light travels at a different speed then we'd know.
 
+Below is an example of a stable molecule created using the simulator. It resists a large range of pressure changes (with reference values in the screen shot).
+
+![Fractal Universe Simulator Screenshot](images/simulator-screen-5.png)
+
+![Fractal Universe Simulator Screenshot](images/simulator-screen-6.png)
+
+![Fractal Universe Simulator Screenshot](images/simulator-screen-7.png)
