@@ -54,7 +54,7 @@ it actually makes a lot of sense we wouldn't detect something that actively repe
 
 ![Anti-gravity screen](images/simulator-screen-3.png)
 
-One thing missing is that I've encountered much better replication of many things in the universe when I had a bug that gave everything a counter-clockwise skew. Nothing was straight. It is my belief that this is actually a real thing, but it is not modeled here.
+You can also emulate a rotational skew coming from a parent field. This causes the energy to have a rotation bias.
 
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-4.png)
 
