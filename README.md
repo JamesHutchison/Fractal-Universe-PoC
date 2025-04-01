@@ -1,6 +1,8 @@
 # Fractal-Universe-PoC
 Fractal Universe Proof-of-Concept
 
+![Fractal Universe Simulator Screenshot](images/simulator-screen-1.png)
+
 This is a Fractal Universe Simulation that runs as a web server. It was originally created with Replit until they got tired
 of me manually making changes and gave me the boot and zip file with my code. I then pushed it here.
 
@@ -16,6 +18,8 @@ This is a theory I developed myself. A fractal universe theory isn't new, but I 
 as I am doing here.
 
 This also doubles as general purpose field simulator, in case you have the need for it.
+
+![Fractal Universe Simulator Screenshot](images/simulator-screen-2.png)
 
 In my opinion this is crude and is intended to demonstrate the concept - much in the same way a petri dish and bacteria can demonstrate evolution.
 
@@ -40,9 +44,14 @@ points and crude effects. Large energy is especially badly done, and there's no 
 simulate energy instability is to just have a lot of energy floating around.
 
 Energy field steering is special - it's a "what-if" where if you turn it negative you get gravity, and if you turn it positive you get anti-gravity.
-Basically, when energy encounters slanted spacetime, does it turn towards the slant (gravity) or turn away (anti-gravity)?
+Basically, when energy encounters slanted spacetime, does it turn towards the slant (gravity) or turn away (anti-gravity)? If you think about it,
+it actually makes a lot of sense we wouldn't detect something that actively repels the very thing we attempt to detect it with.
+
+![Anti-gravity screen](images/simulator-screen-3.png)
 
 One thing missing is that I've encountered much better replication of many things in the universe when I had a bug that gave everything a counter-clockwise skew. Nothing was straight. It is my belief that this is actually a real thing, but it is not modeled here.
+
+![Fractal Universe Simulator Screenshot](images/simulator-screen-4.png)
 
 I also accidentally created the speed of light at one point. Basically, when energy was displacing spacetime forward and treating it like
 resistance, it would always slow down (or speed up) to the same speed. This incidentally also created warp speed energy in uncommon scenarios due to the unlocked speed. I'm still not
