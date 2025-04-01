@@ -2,6 +2,8 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { useState, Suspense, useRef, useEffect } from "react";
 import { useSimulation } from "@/lib/stores/useSimulation";
 import { KeyboardControls, OrthographicCamera } from "@react-three/drei";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import SimulationControls from "./SimulationControls";
 import SpacetimeGrid from "./SpacetimeGrid";
 import * as THREE from "three";
@@ -21,6 +23,8 @@ export default function UniverseSimulator() {
     clearEnergies,
     resetSimulation,
     gridSize,
+    directionMode,
+    setDirectionMode,
   } = useSimulation();
 
   // Calculate camera zoom based on grid size
@@ -103,6 +107,38 @@ export default function UniverseSimulator() {
           {showControls ? "Hide Controls" : "Show Controls"}
         </button>
       </div>
+
+
+    <div className="fixed bottom-16 left-4 bg-slate-800 p-4 rounded-lg shadow-lg z-50">
+      <Label className="text-white">Initial Direction</Label>
+      <RadioGroup
+        value={directionMode}
+        onValueChange={(v) => setDirectionMode(v as any)}
+        className="flex flex-row gap-4 mt-2"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="cycle" id="cycle" />
+          <Label htmlFor="cycle" className="text-white">Cycle</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="up" id="up" />
+          <Label htmlFor="up" className="text-white">Up</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="down" id="down" />
+          <Label htmlFor="down" className="text-white">Down</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="left" id="left" />
+          <Label htmlFor="left" className="text-white">Left</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="right" id="right" />
+          <Label htmlFor="right" className="text-white">Right</Label>
+        </div>
+      </RadioGroup>
+    </div>
+
 
       {/* Quick action buttons */}
       <div className="absolute bottom-4 left-4 flex space-x-2">

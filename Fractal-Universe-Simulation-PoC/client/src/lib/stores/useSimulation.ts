@@ -25,6 +25,9 @@ interface SimulationState {
   parentFieldSkew: number;
   setParentFieldSkew: (skew: number) => void;
 
+  directionMode: 'cycle' | 'up' | 'down' | 'left' | 'right';
+  setDirectionMode: (mode: 'cycle' | 'up' | 'down' | 'left' | 'right') => void;
+
   // Data
   energies: Energy[];
   gridCells: GridCell[];
@@ -72,6 +75,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     isPaused: false,
     forwardDisplacementFactor: 1.0,
     parentFieldSkew: 0,
+    directionMode: 'cycle' as const,
   };
   // Initialize the grid cells
   const initializeGrid = (size: number): GridCell[] => {
@@ -116,6 +120,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
       set({ forwardDisplacementFactor: factor }),
     togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
+    setDirectionMode: (mode) => set({ directionMode: mode }),
 
     // Energy management
     addEnergy: (energy) => {
@@ -163,29 +168,37 @@ export const useSimulation = create<SimulationState>((set, get) => {
     },
 
     addRandomEnergy: () => {
-      const { gridSize, curDirectionIndex, energySize } = get();
+      const { gridSize, curDirectionIndex, energySize, directionMode } = get();
       const halfSize = gridSize / 2;
 
       const directions = [
-        { x: 0, y: 1 }, // up
-        { x: 0, y: -1 }, // down
-        { x: -1, y: 0 }, // left
-        { x: 1, y: 0 }, // right
+        { x: 0, y: 1 }, // right
+        { x: 0, y: -1 }, // left
+        { x: -1, y: 0 }, // up
+        { x: 1, y: 0 }, // down
       ];
-      // const randomDirection =
-      //   directions[Math.floor(Math.random() * directions.length)];
-      const cycledDirection = directions[curDirectionIndex];
-      get().incrementCurrentDirectionIndex()
 
-      // Create energy with random position within grid
+      let direction;
+      if (directionMode === 'cycle') {
+        direction = directions[curDirectionIndex];
+        get().incrementCurrentDirectionIndex();
+      } else {
+        direction = {
+          up: directions[2],
+          down: directions[3],
+          left: directions[1],
+          right: directions[0]
+        }[directionMode];
+      }
+
       const newEnergy: Partial<Energy> = {
         position: {
           x: Math.random() * gridSize - halfSize,
           y: Math.random() * gridSize - halfSize,
         },
         velocity: {
-          x: cycledDirection.x,
-          y: cycledDirection.y,
+          x: direction.x,
+          y: direction.y,
         },
         size: energySize,
       };
