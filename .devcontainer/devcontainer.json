@@ -1,6 +1,6 @@
 {
     "name": "Fractal Universe PoC",
-    "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+    "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:22-bullseye",
     "customizations": {
         "vscode": {
             "extensions": [
