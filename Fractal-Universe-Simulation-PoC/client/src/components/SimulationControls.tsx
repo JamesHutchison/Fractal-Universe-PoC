@@ -30,6 +30,8 @@ export default function SimulationControls() {
     setShowVelocityVectors,
     forwardDisplacementFactor,
     setForwardDisplacementFactor,
+    parentFieldSkew,
+    setParentFieldSkew,
   } = useSimulation();
 
   return (
@@ -46,6 +48,14 @@ export default function SimulationControls() {
               max={400}
               step={10}
               onChange={(value) => setGridSize(value[0])}
+            />
+            <SliderLabel
+              label="Parent Field Skew"
+              value={parentFieldSkew}
+              min={-0.5}
+              max={0.5}
+              step={0.02}
+              onChange={(value) => setParentFieldSkew(value[0])}
             />
 
             <div className="flex items-center space-x-2 pt-2">
