@@ -12,7 +12,8 @@ interface SimulationState {
   displacementStrength: number;
   propagationRate: number;
   falloffRate: number;
-  healingRate: number;
+  spacetimePressure: number;
+  spacetimePressureMultiplier: number;
   showGrid: boolean;
   showVelocityVectors: boolean;
   isPaused: boolean;
@@ -36,7 +37,8 @@ interface SimulationState {
   setPropagationRate: (rate: number) => void;
   setEnergySteerFactor: (factor: number) => void;
   setFalloffRate: (rate: number) => void;
-  setHealingRate: (rate: number) => void;
+  setSpacetimePressure: (rate: number) => void;
+  setSpacetimePressureMultiplier: (multiplier: number) => void;
   setShowGrid: (show: boolean) => void;
   setShowVelocityVectors: (show: boolean) => void;
   setForwardDisplacementFactor: (factor: number) => void;
@@ -61,9 +63,10 @@ export const useSimulation = create<SimulationState>((set, get) => {
     energySize: 1.0,
     energySteerFactor: -0.2,
     displacementStrength: 1.0,
-    propagationRate: 0.2,
+    spacetimePressureMultiplier: 1.0,
+    propagationRate: 2,
     falloffRate: 0.3,
-    healingRate: 0.0, // Rate at which grid returns to equilibrium
+    spacetimePressure: 0.0, // Rate at which grid returns to equilibrium
     showGrid: true,
     showVelocityVectors: false,
     isPaused: false,
@@ -103,7 +106,9 @@ export const useSimulation = create<SimulationState>((set, get) => {
       set({ displacementStrength: strength }),
     setPropagationRate: (rate) => set({ propagationRate: rate }),
     setFalloffRate: (rate) => set({ falloffRate: rate }),
-    setHealingRate: (rate) => set({ healingRate: rate }),
+    setSpacetimePressure: (rate) => set({ spacetimePressure: rate }),
+    setSpacetimePressureMultiplier: (multiplier) =>
+      set({ spacetimePressureMultiplier: multiplier }),
     setShowGrid: (show) => set({ showGrid: show }),
     setEnergySteerFactor: (factor) => set({ energySteerFactor: factor }),
     setShowVelocityVectors: (show) => set({ showVelocityVectors: show }),
@@ -313,7 +318,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     //     displacementStrength,
     //     propagationRate,
     //     falloffRate,
-    //     healingRate,
+    //     spacetimePressure,
     //   } = get();
 
     //   const updatedGrid = [...gridCells];
@@ -409,7 +414,8 @@ export const useSimulation = create<SimulationState>((set, get) => {
         displacementStrength,
         propagationRate,
         falloffRate,
-        healingRate,
+        spacetimePressure,
+        spacetimePressureMultiplier,
         forwardDisplacementFactor,
       } = get();
 
@@ -537,12 +543,13 @@ export const useSimulation = create<SimulationState>((set, get) => {
       }
 
       // Apply grid cell healing (displacement gradually returns to zero)
-      if (healingRate > 0) {
+      if (spacetimePressure > 0) {
+        const pressure = spacetimePressure * spacetimePressureMultiplier;
         for (let i = 0; i < updatedGrid.length; i++) {
           // Dampen displacement over time (exponential decay)
-          // healingRate = 0 means no healing (displacement never returns to equilibrium)
-          updatedGrid[i].displacement.x *= 1 - healingRate * deltaTime;
-          updatedGrid[i].displacement.y *= 1 - healingRate * deltaTime;
+          // spacetimePressure = 0 means no healing (displacement never returns to equilibrium)
+          updatedGrid[i].displacement.x *= 1 - pressure * deltaTime;
+          updatedGrid[i].displacement.y *= 1 - pressure * deltaTime;
         }
       }
 

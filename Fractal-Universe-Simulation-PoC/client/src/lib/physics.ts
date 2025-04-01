@@ -9,9 +9,9 @@ export function calculateDisplacement(
   size: number,
   forwardDisplacementFactor: number,
 ): Vector2 {
-  const safeDist = Math.max(0.01, distance);
-  const falloffFactor = 1 / safeDist * (1 + falloff);
-  const magnitude = Math.pow(1 + strength, 2) * falloffFactor;
+  const safeDist = Math.max(0.5, distance);
+  const falloffFactor = 1 / (safeDist * (1 + falloff));
+  const magnitude = Math.pow(2 + strength, 2) * falloffFactor;
 
   const speed = Math.hypot(velocity.x, velocity.y);
   if (speed < 0.001) return { x: 0, y: 0 };

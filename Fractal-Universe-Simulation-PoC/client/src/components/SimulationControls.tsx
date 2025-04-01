@@ -20,8 +20,10 @@ export default function SimulationControls() {
     setPropagationRate,
     falloffRate,
     setFalloffRate,
-    healingRate,
-    setHealingRate,
+    spacetimePressure,
+    setSpacetimePressure,
+    setSpacetimePressureMultiplier,
+    spacetimePressureMultiplier,
     energySize,
     setEnergySize,
     showGrid,
@@ -137,8 +139,8 @@ export default function SimulationControls() {
               label="Propagation Rate"
               value={propagationRate}
               min={0}
-              max={10}
-              step={0.02}
+              max={20}
+              step={0.2}
               onChange={(value) => setPropagationRate(value[0])}
             />
 
@@ -150,14 +152,22 @@ export default function SimulationControls() {
               step={0.05}
               onChange={(value) => setFalloffRate(value[0])}
             />
-            <div>Strobe Healing Rate from 0 to 4 to emulate gravity waves</div>
+            <div>Strobe pressure to emulate gravity waves</div>
             <SliderLabel
-              label="Healing Rate"
-              value={healingRate}
+              label="Spacetime Pressure"
+              value={spacetimePressure}
               min={0}
-              max={16}
+              max={5}
               step={0.05}
-              onChange={(value) => setHealingRate(value[0])}
+              onChange={(value) => setSpacetimePressure(value[0])}
+            />
+            <SliderLabel
+              label="Spacetime Pressure Multiplier"
+              value={spacetimePressureMultiplier}
+              min={1}
+              max={4}
+              step={1}
+              onChange={(value) => setSpacetimePressureMultiplier(value[0])}
             />
           </div>
         </div>
