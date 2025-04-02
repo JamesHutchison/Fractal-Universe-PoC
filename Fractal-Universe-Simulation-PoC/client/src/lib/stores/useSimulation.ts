@@ -61,6 +61,23 @@ interface SimulationState {
   resetSimulation: () => void;
 }
 
+
+const directionVectors = [
+  { x: 1, y: 0 },   // 0°   (E)
+  { x: 1, y: 1 },   // 45°  (SE)
+  { x: 0, y: 1 },   // 90°  (S)
+  { x: -1, y: 1 },  // 135° (SW)
+  { x: -1, y: 0 },  // 180° (W)
+  { x: -1, y: -1 }, // 225° (NW)
+  { x: 0, y: -1 },  // 270° (N)
+  { x: 1, y: -1 }   // 315° (NE)
+]
+
+function normalize(v: Vector2): Vector2 {
+  const mag = Math.hypot(v.x, v.y)
+  return mag === 0 ? { x: 0, y: 0 } : { x: v.x / mag, y: v.y / mag }
+}
+
 export const useSimulation = create<SimulationState>((set, get) => {
   const defaults = {
     // Default configuration
@@ -79,7 +96,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     forwardDisplacementFactor: 1.0,
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
-    timeFactor: 0,
+    timeFactor: 1.0,
   };
   // Initialize the grid cells
   const initializeGrid = (size: number): GridCell[] => {
@@ -264,23 +281,40 @@ export const useSimulation = create<SimulationState>((set, get) => {
 
           // Calculate redirection based on grid displacement
           if (cell) {
-            // get normalized velocity to find next grid cell
-            const normalizedVectorForGrid = {
-              x: energy.velocity.x ? energy.velocity.x / Math.abs(energy.velocity.x) : 0,
-              y: energy.velocity.y ? energy.velocity.y / Math.abs(energy.velocity.y) : 0,
-            };
+
+            const energyAngle = Math.atan2(energy.velocity.y, energy.velocity.x)
+            const baseOctant = Math.round(8 * energyAngle / (2 * Math.PI) + 8) % 8
+
+            const o1 = directionVectors[baseOctant]
+            const o2 = directionVectors[(baseOctant + 1) % 8]
+            const o3 = directionVectors[(baseOctant + 2) % 8]
+
+
+            const normVelocity = normalize(energy.velocity)
+            const d1 = normVelocity.x * o1.x + normVelocity.y * o1.y
+            const d2 = normVelocity.x * o2.x + normVelocity.y * o2.y
+            const d3 = normVelocity.x * o3.x + normVelocity.y * o3.y
+
+            const total = Math.max(0.0001, d1 + d2 + d3)
+
+            const blended = {
+              x: (o1.x * d1 + o2.x * d2 + o3.x * d3) / total,
+              y: (o1.y * d1 + o2.y * d2 + o3.y * d3) / total
+            }
+
+            const stepX = Math.round(blended.x)
+            const stepY = Math.round(blended.y)
 
             const nextGridPosition = {
-              x: (gridX + normalizedVectorForGrid.x) % gridSize,
-              y: (gridY + normalizedVectorForGrid.y) % gridSize,
-            };
-            const nextCell = gridCells[nextGridPosition.y * gridSize + nextGridPosition.x]
-            let nextCellDisplacement;
-            if (nextCell) {
-              nextCellDisplacement = nextCell.displacement;
-            } else {
-              nextCellDisplacement = { x: 0, y: 0 };
+              x: (gridX + stepX + gridSize) % gridSize,
+              y: (gridY + stepY + gridSize) % gridSize
             }
+
+            const index = nextGridPosition.y * gridSize + nextGridPosition.x
+            const nextCell = gridCells[index]
+            const nextCellDisplacement = nextCell ? nextCell.displacement : { x: 0, y: 0 }
+
+
 
             const magnitude = Math.sqrt(energy.velocity.x ** 2 + energy.velocity.y ** 2)
             const normalizedVelocity = magnitude === 0 ? { x: 0, y: 0 } : {

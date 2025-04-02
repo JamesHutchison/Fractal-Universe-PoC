@@ -171,11 +171,6 @@ export default function SimulationControls() {
               step={1}
               onChange={(value) => setSpacetimePressureMultiplier(value[0])}
             />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="font-medium text-white">Time Control</h3>
-            <Separator className="bg-slate-600" />
             <SliderLabel
               label="Time Factor"
               value={timeFactor}
