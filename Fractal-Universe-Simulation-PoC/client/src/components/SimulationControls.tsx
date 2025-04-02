@@ -34,6 +34,8 @@ export default function SimulationControls() {
     setForwardDisplacementFactor,
     parentFieldSkew,
     setParentFieldSkew,
+    timeFactor,
+    setTimeFactor,
   } = useSimulation();
 
   return (
@@ -168,6 +170,14 @@ export default function SimulationControls() {
               max={4}
               step={1}
               onChange={(value) => setSpacetimePressureMultiplier(value[0])}
+            />
+            <SliderLabel
+              label="Time Factor"
+              value={timeFactor}
+              min={-8}
+              max={8}
+              step={0.5}
+              onChange={(value) => setTimeFactor(value[0])}
             />
           </div>
         </div>

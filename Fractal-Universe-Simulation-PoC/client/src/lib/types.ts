@@ -7,6 +7,7 @@ export interface Energy {
   id: string;
   position: Vector2;
   velocity: Vector2;
+  speed: number;
   size: number;
   color: string;
   createdAt: number;

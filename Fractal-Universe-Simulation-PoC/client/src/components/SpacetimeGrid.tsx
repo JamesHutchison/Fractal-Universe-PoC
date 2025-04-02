@@ -141,7 +141,7 @@ export default function SpacetimeGrid() {
 
   useFrame((_, delta) => {
     if (!isPaused) {
-      delta = Math.min(0.1, delta); // prevent hitch causing bonkers physics
+      delta = Math.min(0.02, delta); // prevent hitch causing bonkers physics
       updateEnergies(delta);
       updateGridDisplacement(delta);
     }

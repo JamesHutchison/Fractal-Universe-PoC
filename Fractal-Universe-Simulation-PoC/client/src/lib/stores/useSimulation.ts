@@ -28,6 +28,9 @@ interface SimulationState {
   directionMode: 'cycle' | 'up' | 'down' | 'left' | 'right';
   setDirectionMode: (mode: 'cycle' | 'up' | 'down' | 'left' | 'right') => void;
 
+  timeFactor: number;
+  setTimeFactor: (factor: number) => void;
+
   // Data
   energies: Energy[];
   gridCells: GridCell[];
@@ -58,6 +61,23 @@ interface SimulationState {
   resetSimulation: () => void;
 }
 
+
+const directionVectors = [
+  { x: 1, y: 0 },   // 0°   (E)
+  { x: 1, y: 1 },   // 45°  (SE)
+  { x: 0, y: 1 },   // 90°  (S)
+  { x: -1, y: 1 },  // 135° (SW)
+  { x: -1, y: 0 },  // 180° (W)
+  { x: -1, y: -1 }, // 225° (NW)
+  { x: 0, y: -1 },  // 270° (N)
+  { x: 1, y: -1 }   // 315° (NE)
+]
+
+function normalize(v: Vector2): Vector2 {
+  const mag = Math.hypot(v.x, v.y)
+  return mag === 0 ? { x: 0, y: 0 } : { x: v.x / mag, y: v.y / mag }
+}
+
 export const useSimulation = create<SimulationState>((set, get) => {
   const defaults = {
     // Default configuration
@@ -76,6 +96,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     forwardDisplacementFactor: 1.0,
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
+    timeFactor: 1.0,
   };
   // Initialize the grid cells
   const initializeGrid = (size: number): GridCell[] => {
@@ -121,6 +142,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
     setDirectionMode: (mode) => set({ directionMode: mode }),
+    setTimeFactor: (factor) => set({ timeFactor: factor }),
 
     // Energy management
     addEnergy: (energy) => {
@@ -131,6 +153,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         id: nanoid(),
         position: energy.position || { x: 0, y: 0 },
         velocity: energy.velocity || { x: 0, y: 0 },
+        speed: energySpeed,
         size: energy.size || 1,
         color: energy.color || "#ffffff",
         createdAt: Date.now(),
@@ -220,12 +243,11 @@ export const useSimulation = create<SimulationState>((set, get) => {
     updateEnergies: (deltaTime) => {
       const {
         energies,
-        energySpeed,
-        energySteerFactor,
         gridSize,
         gridCells,
         forwardDisplacementFactor,
         parentFieldSkew,
+        timeFactor,
       } = get();
 
       // Boundary of the grid
@@ -251,6 +273,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         const gridX = Math.floor(energy.position.x + halfSize);
         const gridY = Math.floor(energy.position.y + halfSize);
 
+
         // Bounds check
         if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize) {
           const gridIndex = gridY * gridSize + gridX;
@@ -258,13 +281,67 @@ export const useSimulation = create<SimulationState>((set, get) => {
 
           // Calculate redirection based on grid displacement
           if (cell) {
+
+            const energyAngle = Math.atan2(energy.velocity.y, energy.velocity.x);
+            const baseOctant = Math.round(8 * energyAngle / (2 * Math.PI) + 8) % 8;
+            const o1 = directionVectors[baseOctant]
+
+            const o1X = (gridX + o1.x + gridSize) % gridSize
+            const o1Y = (gridY + o1.y + gridSize) % gridSize
+            const o1Index = o1Y * gridSize + o1X
+            const o1Cell = gridCells[o1Index]
+
+            let stepX = o1.x
+            let stepY = o1.y
+            let nextCell
+
+            if (!o1Cell || Math.abs(o1Cell.displacement.x) + Math.abs(o1Cell.displacement.y) < 0.5) {
+              nextCell = o1Cell
+            } else {
+              const o2 = directionVectors[(baseOctant + 1) % 8]
+              const o3 = directionVectors[(baseOctant + 2) % 8]
+
+              const vx = energy.velocity.x
+              const vy = energy.velocity.y
+              const mag = Math.sqrt(vx * vx + vy * vy)
+              const nx = vx / mag
+              const ny = vy / mag
+
+              const d1 = nx * o1.x + ny * o1.y
+              const d2 = nx * o2.x + ny * o2.y
+              const d3 = nx * o3.x + ny * o3.y
+
+              const total = Math.max(0.0001, d1 + d2 + d3)
+
+              const blendedX = (o1.x * d1 + o2.x * d2 + o3.x * d3) / total
+              const blendedY = (o1.y * d1 + o2.y * d2 + o3.y * d3) / total
+
+              stepX = Math.round(blendedX)
+              stepY = Math.round(blendedY)
+
+              const blendedXWrapped = (gridX + stepX + gridSize) % gridSize
+              const blendedYWrapped = (gridY + stepY + gridSize) % gridSize
+              const blendedIndex = blendedYWrapped * gridSize + blendedXWrapped
+              nextCell = gridCells[blendedIndex]
+            }
+
+            const nextCellDisplacement = nextCell ? nextCell.displacement : { x: 0, y: 0 }
+
+            const magnitude = Math.sqrt(energy.velocity.x ** 2 + energy.velocity.y ** 2)
+            const normalizedVelocity = magnitude === 0 ? { x: 0, y  : 0 } : {
+              x: (energy.velocity.x / magnitude) * energy.speed,
+              y: (energy.velocity.y / magnitude) * energy.speed
+            }
+
             const redirected = calculateEnergyRedirection(
-              energy.velocity,
+              normalizedVelocity,
               cell.displacement,
+              nextCellDisplacement,
               forwardDisplacementFactor,
               energy.steerFactor,
               energy.size,
-              parentFieldSkew
+              parentFieldSkew,
+              timeFactor,
             );
 
             // Apply redirection to velocity
@@ -444,12 +521,12 @@ export const useSimulation = create<SimulationState>((set, get) => {
         const gridX = Math.floor(energy.position.x + halfSize);
         const gridY = Math.floor(energy.position.y + halfSize);
         const energyScale = (1 / energy.size)
-        const maxDistance = Math.min(7, Math.floor(7 * energyScale))
+        const maxDistance = Math.min(9, Math.floor(9 * energyScale))
 
         // Apply displacement to surrounding grid cells
-        for (let _y = gridY - 7; _y <= gridY + 7; _y++) {
+        for (let _y = gridY - 9; _y <= gridY + 9; _y++) {
           const y = (_y + gridSize) % gridSize;
-          for (let _x = gridX - 7; _x <= gridX + 7; _x++) {
+          for (let _x = gridX - 9; _x <= gridX + 9; _x++) {
             const x = (_x + gridSize) % gridSize;
             // Calculate grid cell index
             const index = y * gridSize + x;
@@ -476,31 +553,10 @@ export const useSimulation = create<SimulationState>((set, get) => {
               forwardDisplacementFactor,
             );
 
-            // const currentDisplacement = updatedGrid[index].displacement;
-            // // const magnitude = Math.hypot(
-            // //   currentDisplacement.x,
-            // //   currentDisplacement.y,
-            // // );
-            // const damping = 1;
-
-            // updatedGrid[index].displacement.x +=
-            //   displacement.x * deltaTime * damping;
-            // updatedGrid[index].displacement.y +=
-            //   displacement.y * deltaTime * damping;
-
-            // Apply displacement to grid cell
-            // The displacement strength is already factored into the displacement vector
-            // updatedGrid[index].displacement.x += displacement.x * deltaTime;
-            // updatedGrid[index].displacement.y += displacement.y * deltaTime;
-
             const existing = updatedGrid[index].displacement;
             const appliedX = displacement.x * deltaTime;
             const appliedY = displacement.y * deltaTime;
 
-            // const scaleX = 1 / (1 + Math.max(0, existing.x * displacement.x));
-            // const scaleY = 1 / (1 + Math.max(0, existing.y * displacement.y));
-            // const scaleX = 2 - (1 + existing.x / appliedX);
-            // const scaleY = 2 - (1 + existing.y / appliedY);
             const scaleX = 1;
             const scaleY = 1;
 
