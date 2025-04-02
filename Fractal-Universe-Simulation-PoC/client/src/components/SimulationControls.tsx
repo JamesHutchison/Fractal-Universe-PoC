@@ -179,9 +179,9 @@ export default function SimulationControls() {
             <SliderLabel
               label="Time Factor"
               value={timeFactor}
-              min={-1}
-              max={1}
-              step={1}
+              min={-8}
+              max={8}
+              step={0.5}
               onChange={(value) => setTimeFactor(value[0])}
             />
           </div>
