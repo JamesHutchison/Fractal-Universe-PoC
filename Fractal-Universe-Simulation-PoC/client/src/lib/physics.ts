@@ -59,10 +59,12 @@ export function calculateDisplacement(
 export function calculateEnergyRedirection(
   velocity: Vector2,
   displacement: Vector2,
+  nextCellDisplacement: Vector2,
   forwardDisplacementFactor: number = 0.0,
   steerFactor: number = 0.2,
   energySize: number = 1,
   parentFieldSkew: number = 0.0,
+  timeFactor: number = 1,
 ): Vector2 {
   const dispMag = Math.hypot(displacement.x, displacement.y);
   if (dispMag < 0.01) return { ...velocity };
@@ -117,7 +119,37 @@ export function calculateEnergyRedirection(
   };
 
   const redirMag = Math.hypot(redirVec.x, redirVec.y);
-  const scale = velMag / redirMag;
+  let scale = velMag / redirMag;
+
+  // Calculate time scaling based on displacement difference
+  if (timeFactor != 0 && dispMag > 0.01) {
+    // Calculate displacement difference vector
+    const dispDiff = {
+      x: nextCellDisplacement.x - displacement.x,
+      y: nextCellDisplacement.y - displacement.y,
+    };
+
+    const dispDiffMag = Math.hypot(dispDiff.x, dispDiff.y);
+    if (dispDiffMag > 0.01) {
+      // Normalize displacement difference
+      const normDispDiff = {
+        x: dispDiff.x / dispDiffMag,
+        y: dispDiff.y / dispDiffMag,
+      };
+
+      // Calculate alignment between velocity and displacement difference
+      const alignment = (normDispDiff.x * normVel.x + normDispDiff.y * normVel.y);
+
+      // Calculate magnitude ratio using displacement difference
+      const magnitudeRatio = dispDiffMag / velMag;
+
+      // Combine alignment and magnitude for time scaling
+      const timeScale = alignment * magnitudeRatio;
+
+      // Apply time factor with 0 as the neutral point
+      scale *= (1 + timeScale * timeFactor);
+    }
+  }
 
   return {
     x: redirVec.x * scale,
