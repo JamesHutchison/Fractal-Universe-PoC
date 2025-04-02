@@ -284,41 +284,47 @@ export const useSimulation = create<SimulationState>((set, get) => {
 
             const energyAngle = Math.atan2(energy.velocity.y, energy.velocity.x);
             const baseOctant = Math.round(8 * energyAngle / (2 * Math.PI) + 8) % 8;
+            const o1 = directionVectors[baseOctant]
 
-            const o1 = directionVectors[baseOctant];
-            const o1Index = o1.y * gridSize + o1.x;
-            const o1Cell = gridCells[o1Index];
-            let nextCell;
-            if ((o1Cell === undefined) || Math.abs(o1Cell.displacement.x) + Math.abs(o1Cell.displacement.y) < 0.5) {
-              nextCell = o1Cell;
+            const o1X = (gridX + o1.x + gridSize) % gridSize
+            const o1Y = (gridY + o1.y + gridSize) % gridSize
+            const o1Index = o1Y * gridSize + o1X
+            const o1Cell = gridCells[o1Index]
+
+            let stepX = o1.x
+            let stepY = o1.y
+            let nextCell
+
+            if (!o1Cell || Math.abs(o1Cell.displacement.x) + Math.abs(o1Cell.displacement.y) < 0.5) {
+              nextCell = o1Cell
             } else {
               const o2 = directionVectors[(baseOctant + 1) % 8]
               const o3 = directionVectors[(baseOctant + 2) % 8]
 
+              const vx = energy.velocity.x
+              const vy = energy.velocity.y
+              const mag = Math.sqrt(vx * vx + vy * vy)
+              const nx = vx / mag
+              const ny = vy / mag
 
-              const normVelocity = normalize(energy.velocity)
-              const d1 = normVelocity.x * o1.x + normVelocity.y * o1.y
-              const d2 = normVelocity.x * o2.x + normVelocity.y * o2.y
-              const d3 = normVelocity.x * o3.x + normVelocity.y * o3.y
+              const d1 = nx * o1.x + ny * o1.y
+              const d2 = nx * o2.x + ny * o2.y
+              const d3 = nx * o3.x + ny * o3.y
 
               const total = Math.max(0.0001, d1 + d2 + d3)
 
-              const blended = {
-                x: (o1.x * d1 + o2.x * d2 + o3.x * d3) / total,
-                y: (o1.y * d1 + o2.y * d2 + o3.y * d3) / total
-              }
+              const blendedX = (o1.x * d1 + o2.x * d2 + o3.x * d3) / total
+              const blendedY = (o1.y * d1 + o2.y * d2 + o3.y * d3) / total
 
-              const stepX = Math.round(blended.x)
-              const stepY = Math.round(blended.y)
+              stepX = Math.round(blendedX)
+              stepY = Math.round(blendedY)
 
-              const nextGridPosition = {
-                x: (gridX + stepX + gridSize) % gridSize,
-                y: (gridY + stepY + gridSize) % gridSize
-              }
-
-              const index = nextGridPosition.y * gridSize + nextGridPosition.x
-              nextCell = gridCells[index]
+              const blendedXWrapped = (gridX + stepX + gridSize) % gridSize
+              const blendedYWrapped = (gridY + stepY + gridSize) % gridSize
+              const blendedIndex = blendedYWrapped * gridSize + blendedXWrapped
+              nextCell = gridCells[blendedIndex]
             }
+
             const nextCellDisplacement = nextCell ? nextCell.displacement : { x: 0, y: 0 }
 
             const magnitude = Math.sqrt(energy.velocity.x ** 2 + energy.velocity.y ** 2)
