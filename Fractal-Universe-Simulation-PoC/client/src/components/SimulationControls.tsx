@@ -37,9 +37,9 @@ export default function SimulationControls() {
   } = useSimulation();
 
   return (
-    <Card className="bg-slate-800 shadow-md overflow-y-auto">
-      <CardContent className="pt-4 pb-4 overflow-y-auto">
-        <div className="grid gap-4 overflow-y-auto pr-4">
+    <Card className="bg-slate-800 shadow-md overflow-hidden">
+      <CardContent className="pt-4 pb-4 overflow-y-auto max-h-[75vh] ">
+        <div className="grid gap-4">
           <div className="space-y-2">
             <h3 className="font-medium text-white">Grid Configuration</h3>
             <Separator className="bg-slate-600" />
