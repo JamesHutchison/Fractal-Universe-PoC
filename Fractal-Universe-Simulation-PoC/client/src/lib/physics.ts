@@ -35,10 +35,13 @@ export function calculateDisplacement(
 
   // const forwardFactor = Math.max(0, forwardComponent);
 
-  const cross = normVx * offsetY - normVy * offsetX;
-  const skewStrength = 0.314;
-  const skewX = -Math.sign(cross) * lateralX * skewStrength;
-  const skewY = -Math.sign(cross) * lateralY * skewStrength;
+  // this exaggerated lateral rotation / skew to make up for no time effects but may be unneeded now that time is implemented
+  // const cross = normVx * offsetY - normVy * offsetX;
+  // const skewStrength = 0.314;
+  // const skewX = -Math.sign(cross) * lateralX * skewStrength;
+  // const skewY = -Math.sign(cross) * lateralY * skewStrength;
+  const skewX = 0;
+  const skewY = 0;
 
   const forwardFactor = (0.15 * forwardDisplacementFactor);
   const sideFactor = (1 - forwardFactor);
@@ -109,8 +112,8 @@ export function calculateEnergyRedirection(
   // Apply skew to lateral movement
   const skewAmount = parentFieldSkew;
   const adjustedDisplacement = {
-    x: adjustedForward.x + (lateralVec.x * 1.05) + (skewVec.x * skewAmount),
-    y: adjustedForward.y + (lateralVec.y * 1.05) + (skewVec.y * skewAmount),
+    x: adjustedForward.x + (lateralVec.x) + (skewVec.x * skewAmount),
+    y: adjustedForward.y + (lateralVec.y) + (skewVec.y * skewAmount),
   };
 
   const redirVec = {
