@@ -13,6 +13,7 @@
     "postCreateCommand": "npm install",
     "forwardPorts": [
         5173,
+        5000,
         3000
     ],
     "portsAttributes": {
