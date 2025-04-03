@@ -1,21 +1,31 @@
-MIT License
+License
 
 Copyright (c) 2025 James Hutchison
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is granted to use and modify this software for personal and educational purposes only.
+Exceptions may be granted with expressed written permission. All derived work must
+prominantly give visible credit to the original author, James Hutchison.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The following restrictions apply:
+
+- You may not distribute, repackage, or publish the software, in whole or in
+  part, under any name or form, including modified or wrapped versions, without
+  prior written permission.
+- You may not host the software, or make it accessible to others over a network
+  or the internet, without prior written permission.
+- You may not use the software, or any derivative of it, in any commercial
+  product or service, including but not limited to app stores, subscription
+  platforms, or SaaS offerings.
+- Educational use does not include publishing or distributing the software to
+  the public, whether for free or for a fee. Use in classroom settings or
+  personal study is permitted; redistribution is not.
+
+The above restrictions apply to all parties except the copyright holder, James Hutchison,
+who retains full rights to use, modify, distribute, host, and commercialize the software without limitation.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
