@@ -98,8 +98,8 @@ export default function SimulationControls() {
             <SliderLabel
               label="Energy Field Steering"
               value={energySteerFactor}
-              min={-0.5}
-              max={0.5}
+              min={-1}
+              max={1}
               step={0.1}
               onChange={(value) => setEnergySteerFactor(value[0])}
             />
@@ -138,15 +138,6 @@ export default function SimulationControls() {
             />
 
             <SliderLabel
-              label="Propagation Rate"
-              value={propagationRate}
-              min={0}
-              max={20}
-              step={0.2}
-              onChange={(value) => setPropagationRate(value[0])}
-            />
-
-            <SliderLabel
               label="Falloff Rate"
               value={falloffRate}
               min={0}
@@ -166,10 +157,18 @@ export default function SimulationControls() {
             <SliderLabel
               label="Spacetime Pressure Multiplier"
               value={spacetimePressureMultiplier}
-              min={1}
+              min={0}
               max={4}
-              step={1}
+              step={0.2}
               onChange={(value) => setSpacetimePressureMultiplier(value[0])}
+            />
+            <SliderLabel
+              label="Blend Rate"
+              value={propagationRate}
+              min={0}
+              max={1}
+              step={0.1}
+              onChange={(value) => setPropagationRate(value[0])}
             />
             <SliderLabel
               label="Time Factor"
