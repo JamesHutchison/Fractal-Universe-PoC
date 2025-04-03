@@ -4,8 +4,8 @@ Fractal Universe Proof-of-Concept
 
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-1.png)
 
-This is a Fractal Universe Simulation that runs as a web server. It was originally created with Replit until they got tired
-of me manually making changes and gave me the boot and zip file with my code. I then pushed it here.
+This is a Fractal Universe Simulation that runs as a web server. It is able to model a surprisingly large number of
+behavior in the Universe, giving strong credit to a fractal Universe theory.
 
 The fractal universe simulator is based on a very simple theory:
 
