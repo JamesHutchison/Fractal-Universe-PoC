@@ -87,7 +87,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     energySteerFactor: -0.2,
     displacementStrength: 1.0,
     spacetimePressureMultiplier: 1.0,
-    propagationRate: 2,
+    propagationRate: 0.2,
     falloffRate: 0.3,
     spacetimePressure: 0.0, // Rate at which grid returns to equilibrium
     showGrid: true,
