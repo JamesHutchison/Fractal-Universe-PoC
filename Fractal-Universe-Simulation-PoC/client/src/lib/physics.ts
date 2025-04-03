@@ -9,9 +9,9 @@ export function calculateDisplacement(
   size: number,
   forwardDisplacementFactor: number,
 ): Vector2 {
-  const safeDist = Math.max(0.5, distance);
-  const falloffFactor = 1 / (safeDist * (1 + falloff));
-  const magnitude = Math.pow(2 + strength, 2) * falloffFactor;
+  const safeDist = Math.max(0.2, distance);
+  const falloffFactor = 1 / (1 + (safeDist * (falloff + 0.01)));
+  const magnitude = Math.pow(strength, 2) * falloffFactor;
 
   const speed = Math.hypot(velocity.x, velocity.y);
   if (speed < 0.001) return { x: 0, y: 0 };
@@ -43,7 +43,8 @@ export function calculateDisplacement(
   const skewX = 0;
   const skewY = 0;
 
-  const forwardFactor = (0.15 * forwardDisplacementFactor);
+  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
+  // const forwardFactor = 0.15;
   const sideFactor = (1 - forwardFactor);
 
   return {
@@ -157,33 +158,5 @@ export function calculateEnergyRedirection(
   return {
     x: redirVec.x * scale,
     y: redirVec.y * scale,
-  };
-}
-
-/**
- * Calculates the propagation of displacement through the grid
- *
- * @param sourceCell The displacement value of the source cell
- * @param targetCell The current displacement of the target cell
- * @param distance The distance between cells
- * @param propagationRate The rate of propagation
- * @returns The new displacement for the target cell
- */
-export function calculatePropagation(
-  sourceCell: Vector2,
-  targetCell: Vector2,
-  distance: number,
-  propagationRate: number,
-): Vector2 {
-  // Calculate falloff with distance
-  const falloff = (1 / (1 + distance * distance)) ^ 2;
-
-  // Calculate propagation influence
-  const influence = falloff * propagationRate;
-
-  // Calculate new displacement as a weighted average
-  return {
-    x: targetCell.x + (sourceCell.x - targetCell.x) * influence,
-    y: targetCell.y + (sourceCell.y - targetCell.y) * influence,
   };
 }
