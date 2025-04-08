@@ -84,7 +84,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     gridSize: 100, // 100x100 grid
     energySpeed: 15,
     energySize: 1.0,
-    energySteerFactor: -0.2,
+    energySteerFactor: -0.5,
     displacementStrength: 1.0,
     spacetimePressureMultiplier: 1.0,
     propagationRate: 0.2,
