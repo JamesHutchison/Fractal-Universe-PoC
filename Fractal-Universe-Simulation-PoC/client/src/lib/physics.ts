@@ -101,7 +101,7 @@ export function calculateEnergyRedirection(
 
   // const baselineDisplacement = 1.0;
   // const displacementRatio = dispMag / baselineDisplacement;
-  const displacementRatio = Math.max(0.0001, Math.abs(forwardDot));
+  const displacementRatio = Math.max(0.0001, Math.max(0, forwardDot));
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
   const forwardResistance = Math.pow(forwardDisplacementFactor, 2) * inverseResistance;
