@@ -299,7 +299,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               nextCell = o1Cell
             } else {
               const o2 = directionVectors[(baseOctant + 1) % 8]
-              const o3 = directionVectors[(baseOctant + 2) % 8]
+              const o3 = directionVectors[(baseOctant + 7) % 8]
 
               const vx = energy.velocity.x
               const vy = energy.velocity.y
