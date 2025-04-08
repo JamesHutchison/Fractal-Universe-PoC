@@ -99,8 +99,9 @@ export function calculateEnergyRedirection(
     y: displacement.y - forwardVec.y,
   };
 
-  const baselineDisplacement = 1.0;
-  const displacementRatio = dispMag / baselineDisplacement;
+  // const baselineDisplacement = 1.0;
+  // const displacementRatio = dispMag / baselineDisplacement;
+  const displacementRatio = Math.max(0.0001, Math.abs(forwardDot));
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
   const forwardResistance = Math.pow(forwardDisplacementFactor, 2) * inverseResistance;
@@ -118,7 +119,7 @@ export function calculateEnergyRedirection(
   };
 
   const redirVec = {
-    x: (velocity.x * 1.00) + (adjustedDisplacement.x * steerFactor * (1 / energySize)),
+    x: velocity.x + (adjustedDisplacement.x * steerFactor * (1 / energySize)),
     y: velocity.y + (adjustedDisplacement.y * steerFactor * (1 / energySize)),
   };
 
