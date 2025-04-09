@@ -9,9 +9,9 @@ export function calculateDisplacement(
   size: number,
   forwardDisplacementFactor: number,
 ): Vector2 {
-  const safeDist = Math.max(0.5, distance);
-  const falloffFactor = 1 / (safeDist * (1 + falloff));
-  const magnitude = Math.pow(2 + strength, 2) * falloffFactor;
+  const safeDist = Math.max(0.2, distance);
+  const falloffFactor = 1 / (1 + (safeDist * (falloff + 0.01)));
+  const magnitude = Math.pow(strength, 2) * falloffFactor;
 
   const speed = Math.hypot(velocity.x, velocity.y);
   if (speed < 0.001) return { x: 0, y: 0 };
@@ -43,7 +43,8 @@ export function calculateDisplacement(
   const skewX = 0;
   const skewY = 0;
 
-  const forwardFactor = (0.15 * forwardDisplacementFactor);
+  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
+  // const forwardFactor = 0.15;
   const sideFactor = (1 - forwardFactor);
 
   return {
@@ -98,8 +99,9 @@ export function calculateEnergyRedirection(
     y: displacement.y - forwardVec.y,
   };
 
-  const baselineDisplacement = 1.0;
-  const displacementRatio = dispMag / baselineDisplacement;
+  // const baselineDisplacement = 1.0;
+  // const displacementRatio = dispMag / baselineDisplacement;
+  const displacementRatio = Math.max(0.0001, Math.max(0, forwardDot));
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
   const forwardResistance = Math.pow(forwardDisplacementFactor, 2) * inverseResistance;
@@ -117,7 +119,7 @@ export function calculateEnergyRedirection(
   };
 
   const redirVec = {
-    x: (velocity.x * 1.00) + (adjustedDisplacement.x * steerFactor * (1 / energySize)),
+    x: velocity.x + (adjustedDisplacement.x * steerFactor * (1 / energySize)),
     y: velocity.y + (adjustedDisplacement.y * steerFactor * (1 / energySize)),
   };
 

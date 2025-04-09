@@ -84,10 +84,10 @@ export const useSimulation = create<SimulationState>((set, get) => {
     gridSize: 100, // 100x100 grid
     energySpeed: 15,
     energySize: 1.0,
-    energySteerFactor: -0.2,
+    energySteerFactor: -0.5,
     displacementStrength: 1.0,
     spacetimePressureMultiplier: 1.0,
-    propagationRate: 2,
+    propagationRate: 0.2,
     falloffRate: 0.3,
     spacetimePressure: 0.0, // Rate at which grid returns to equilibrium
     showGrid: true,
@@ -299,7 +299,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               nextCell = o1Cell
             } else {
               const o2 = directionVectors[(baseOctant + 1) % 8]
-              const o3 = directionVectors[(baseOctant + 2) % 8]
+              const o3 = directionVectors[(baseOctant + 7) % 8]
 
               const vx = energy.velocity.x
               const vy = energy.velocity.y
