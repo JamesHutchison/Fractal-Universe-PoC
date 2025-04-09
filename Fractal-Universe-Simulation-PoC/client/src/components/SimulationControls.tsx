@@ -26,6 +26,12 @@ export default function SimulationControls() {
     spacetimePressureMultiplier,
     energySize,
     setEnergySize,
+    energyBaseShedRate,
+    setEnergyBaseShedRate,
+    energyDisplacementShedRate,
+    setEnergyDisplacementShedRate,
+    energyShedFactor,
+    setEnergyShedFactor,
     showGrid,
     setShowGrid,
     showVelocityVectors,
@@ -36,6 +42,8 @@ export default function SimulationControls() {
     setParentFieldSkew,
     timeFactor,
     setTimeFactor,
+    showTimeEffects,
+    setShowTimeEffects,
   } = useSimulation();
 
   return (
@@ -96,6 +104,33 @@ export default function SimulationControls() {
             />
 
             <SliderLabel
+              label="Energy Base Shed Rate"
+              value={energyBaseShedRate}
+              min={0}
+              max={0.5}
+              step={0.01}
+              onChange={(value) => setEnergyBaseShedRate(value[0])}
+            />
+
+            <SliderLabel
+              label="Energy Displacement Shed Rate"
+              value={energyDisplacementShedRate}
+              min={0}
+              max={1.0}
+              step={0.02}
+              onChange={(value) => setEnergyDisplacementShedRate(value[0])}
+            />
+
+            <SliderLabel
+              label="Energy Shed Factor"
+              value={energyShedFactor}
+              min={0.1}
+              max={2.0}
+              step={0.1}
+              onChange={(value) => setEnergyShedFactor(value[0])}
+            />
+
+            <SliderLabel
               label="Energy Field Steering"
               value={energySteerFactor}
               min={-1}
@@ -104,7 +139,7 @@ export default function SimulationControls() {
               onChange={(value) => setEnergySteerFactor(value[0])}
             />
 
-            <div className="flex items-center space-x-2 pt-2">
+            {/* <div className="flex items-center space-x-2 pt-2">
               <Switch
                 id="show-vectors"
                 checked={showVelocityVectors}
@@ -113,7 +148,7 @@ export default function SimulationControls() {
               <Label htmlFor="show-vectors" className="text-white">
                 Show Velocity Vectors
               </Label>
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-2 pt-2">
@@ -177,6 +212,15 @@ export default function SimulationControls() {
               max={8}
               step={0.5}
               onChange={(value) => setTimeFactor(value[0])}
+            />
+
+            <SliderLabel
+              label="Show Time Effects"
+              value={showTimeEffects}
+              min={0}
+              max={1}
+              step={1}
+              onChange={(value) => setShowTimeEffects(value[0])}
             />
           </div>
         </div>

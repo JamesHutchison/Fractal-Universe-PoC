@@ -8,6 +8,9 @@ interface SimulationState {
   gridSize: number;
   energySpeed: number;
   energySize: number;
+  energyBaseShedRate: number;
+  energyDisplacementShedRate: number;
+  energyShedFactor: number;
   energySteerFactor: number;
   displacementStrength: number;
   propagationRate: number;
@@ -16,6 +19,7 @@ interface SimulationState {
   spacetimePressureMultiplier: number;
   showGrid: boolean;
   showVelocityVectors: boolean;
+  showTimeEffects: number;
   isPaused: boolean;
 
   forwardDisplacementFactor: number;
@@ -39,6 +43,9 @@ interface SimulationState {
   setGridSize: (size: number) => void;
   setEnergySpeed: (speed: number) => void;
   setEnergySize: (size: number) => void;
+  setEnergyBaseShedRate: (rate: number) => void;
+  setEnergyDisplacementShedRate: (rate: number) => void;
+  setEnergyShedFactor: (factor: number) => void;
   setDisplacementStrength: (strength: number) => void;
   setPropagationRate: (rate: number) => void;
   setEnergySteerFactor: (factor: number) => void;
@@ -48,6 +55,7 @@ interface SimulationState {
   setShowGrid: (show: boolean) => void;
   setShowVelocityVectors: (show: boolean) => void;
   setForwardDisplacementFactor: (factor: number) => void;
+  setShowTimeEffects: (show: number) => void;
   togglePause: () => void;
 
   addEnergy: (energy: Partial<Energy>) => void;
@@ -84,6 +92,9 @@ export const useSimulation = create<SimulationState>((set, get) => {
     gridSize: 100, // 100x100 grid
     energySpeed: 15,
     energySize: 1.0,
+    energyBaseShedRate: 0.0,
+    energyDisplacementShedRate: 0.0,
+    energyShedFactor: 0.1,
     energySteerFactor: -0.5,
     displacementStrength: 1.0,
     spacetimePressureMultiplier: 1.0,
@@ -97,6 +108,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
     timeFactor: 1.0,
+    showTimeEffects: 1,
   };
   // Initialize the grid cells
   const initializeGrid = (size: number): GridCell[] => {
@@ -127,6 +139,10 @@ export const useSimulation = create<SimulationState>((set, get) => {
     },
     setEnergySpeed: (speed) => set({ energySpeed: speed }),
     setEnergySize: (size) => set({ energySize: size }),
+    setEnergyBaseShedRate: (rate) => set({ energyBaseShedRate: rate }),
+    setEnergyDisplacementShedRate: (rate) =>
+      set({ energyDisplacementShedRate: rate }),
+    setEnergyShedFactor: (factor) => set({ energyShedFactor: factor }),
     setDisplacementStrength: (strength) =>
       set({ displacementStrength: strength }),
     setPropagationRate: (rate) => set({ propagationRate: rate }),
@@ -143,6 +159,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
     setDirectionMode: (mode) => set({ directionMode: mode }),
     setTimeFactor: (factor) => set({ timeFactor: factor }),
+    setShowTimeEffects: (show) => set({ showTimeEffects: show }),
 
     // Energy management
     addEnergy: (energy) => {
@@ -248,6 +265,9 @@ export const useSimulation = create<SimulationState>((set, get) => {
         forwardDisplacementFactor,
         parentFieldSkew,
         timeFactor,
+        energyBaseShedRate,
+        energyDisplacementShedRate,
+        energyShedFactor,
       } = get();
 
       // Boundary of the grid
@@ -279,7 +299,6 @@ export const useSimulation = create<SimulationState>((set, get) => {
           const gridIndex = gridY * gridSize + gridX;
           const cell = gridCells[gridIndex];
 
-          // Calculate redirection based on grid displacement
           if (cell) {
 
             const energyAngle = Math.atan2(energy.velocity.y, energy.velocity.x);
@@ -333,7 +352,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               y: (energy.velocity.y / magnitude) * energy.speed
             }
 
-            const redirected = calculateEnergyRedirection(
+            const redirectionResult = calculateEnergyRedirection(
               normalizedVelocity,
               cell.displacement,
               nextCellDisplacement,
@@ -345,15 +364,32 @@ export const useSimulation = create<SimulationState>((set, get) => {
             );
 
             // Apply redirection to velocity
-            updatedEnergy.velocity = redirected;
+            updatedEnergy.velocity = redirectionResult.vector;
+
+            const displacementMagnitudeDifference = (
+              Math.hypot(cell.displacement.x, cell.displacement.y) -
+              Math.hypot(nextCellDisplacement.x, nextCellDisplacement.y)
+            );
+
+            // energy shedding
+
+            if (energyBaseShedRate && energyDisplacementShedRate) {
+              // shed is allowed to go negative
+              const shed = (energyBaseShedRate + (displacementMagnitudeDifference) * energyDisplacementShedRate) * deltaTime;
+              const shedFactor = 0.1 * energyShedFactor * Math.pow(1 + updatedEnergy.size, 2 * shed);
+
+              updatedEnergy.size = Math.max(0.07, updatedEnergy.size - (
+                Math.min(1, Math.max(-1, (shed * shedFactor))) * Math.pow(redirectionResult.timeScale, 2)
+              ));
+            }
           }
         }
 
         // Scale based on how much the redirection changed the velocity
-        const newSpeed = Math.sqrt(
-          updatedEnergy.velocity.x * updatedEnergy.velocity.x +
-            updatedEnergy.velocity.y * updatedEnergy.velocity.y,
-        );
+        // const newSpeed = Math.sqrt(
+        //   updatedEnergy.velocity.x * updatedEnergy.velocity.x +
+        //     updatedEnergy.velocity.y * updatedEnergy.velocity.y,
+        // );
 
         // const speedScale = newSpeed / energySpeed;
 
