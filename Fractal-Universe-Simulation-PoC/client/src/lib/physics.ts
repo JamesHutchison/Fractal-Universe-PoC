@@ -9,8 +9,10 @@ export function calculateDisplacement(
   size: number,
   forwardDisplacementFactor: number,
 ): Vector2 {
+  if (distance == 0) return { x: 0, y: 0 };
   const safeDist = Math.max(0.2, distance);
   const falloffFactor = 1 / (1 + (safeDist * (falloff + 0.01)));
+
   const magnitude = Math.pow(strength, 2) * falloffFactor;
 
   const speed = Math.hypot(velocity.x, velocity.y);
@@ -25,26 +27,15 @@ export function calculateDisplacement(
   const offsetX = offset.x;
   const offsetY = offset.y;
 
-  const offsetMag = Math.hypot(offsetX, offsetY);
-  if (offsetMag < 0.001) return { x: 0, y: 0 };
-
-  const forwardComponent = (offsetX * normVx + offsetY * normVy) / offsetMag;
+  const forwardComponent = (offsetX * normVx + offsetY * normVy) / distance;
   if (forwardComponent < 0) return { x: 0, y: 0 };
 
-  const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / offsetMag;
+  const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / distance;
 
-  // const forwardFactor = Math.max(0, forwardComponent);
-
-  // this exaggerated lateral rotation / skew to make up for no time effects but may be unneeded now that time is implemented
-  // const cross = normVx * offsetY - normVy * offsetX;
-  // const skewStrength = 0.314;
-  // const skewX = -Math.sign(cross) * lateralX * skewStrength;
-  // const skewY = -Math.sign(cross) * lateralY * skewStrength;
   const skewX = 0;
   const skewY = 0;
 
   const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
-  // const forwardFactor = 0.15;
   const sideFactor = (1 - forwardFactor);
 
   return {
