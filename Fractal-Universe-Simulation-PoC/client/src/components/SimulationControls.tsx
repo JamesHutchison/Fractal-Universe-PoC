@@ -143,7 +143,6 @@ export default function SimulationControls() {
               step={0.05}
               onChange={(value) => setFalloffRate(value[0])}
             />
-            <div>Strobe pressure to emulate gravity waves</div>
             <SliderLabel
               label="Spacetime Pressure"
               value={spacetimePressure}
