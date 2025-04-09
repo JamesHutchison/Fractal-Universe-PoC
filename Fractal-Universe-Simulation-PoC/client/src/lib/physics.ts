@@ -59,6 +59,10 @@ export function calculateDisplacement(
   };
 }
 
+interface Vector2WithScale {
+  vector: Vector2;
+  timeScale: number;
+}
 
 export function calculateEnergyRedirection(
   velocity: Vector2,
@@ -69,12 +73,12 @@ export function calculateEnergyRedirection(
   energySize: number = 1,
   parentFieldSkew: number = 0.0,
   timeFactor: number = 1,
-): Vector2 {
+): Vector2WithScale {
   const dispMag = Math.hypot(displacement.x, displacement.y);
-  if (dispMag < 0.01) return { ...velocity };
+  if (dispMag < 0.01) return { vector: velocity, timeScale: 1 };
 
   const velMag = Math.hypot(velocity.x, velocity.y);
-  if (velMag < 0.01) return { ...velocity };
+  if (velMag < 0.01) return { vector: velocity, timeScale: 1 };
 
   const normVel = {
     x: velocity.x / velMag,
@@ -125,6 +129,7 @@ export function calculateEnergyRedirection(
 
   const redirMag = Math.hypot(redirVec.x, redirVec.y);
   let scale = velMag / redirMag;
+  let timeScale = 1;
 
   // Calculate time scaling based on displacement difference
   if (timeFactor != 0 && dispMag > 0.01) {
@@ -149,7 +154,7 @@ export function calculateEnergyRedirection(
       const magnitudeRatio = dispDiffMag / velMag;
 
       // Combine alignment and magnitude for time scaling
-      const timeScale = alignment * magnitudeRatio;
+      timeScale = alignment * magnitudeRatio;
 
       // Apply time factor with 0 as the neutral point
       scale *= (1 + timeScale * timeFactor);
@@ -157,7 +162,8 @@ export function calculateEnergyRedirection(
   }
 
   return {
-    x: redirVec.x * scale,
-    y: redirVec.y * scale,
+    vector: {x: redirVec.x * scale,
+    y: redirVec.y * scale},
+    timeScale: Math.min(1, Math.abs(timeScale * timeFactor)),
   };
 }

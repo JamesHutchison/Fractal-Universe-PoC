@@ -26,6 +26,12 @@ export default function SimulationControls() {
     spacetimePressureMultiplier,
     energySize,
     setEnergySize,
+    energyBaseShedRate,
+    setEnergyBaseShedRate,
+    energyDisplacementShedRate,
+    setEnergyDisplacementShedRate,
+    energyShedFactor,
+    setEnergyShedFactor,
     showGrid,
     setShowGrid,
     showVelocityVectors,
@@ -93,6 +99,33 @@ export default function SimulationControls() {
               max={5}
               step={0.1}
               onChange={(value) => setEnergySize(value[0])}
+            />
+
+            <SliderLabel
+              label="Energy Base Shed Rate"
+              value={energyBaseShedRate}
+              min={0}
+              max={0.5}
+              step={0.01}
+              onChange={(value) => setEnergyBaseShedRate(value[0])}
+            />
+
+            <SliderLabel
+              label="Energy Displacement Shed Rate"
+              value={energyDisplacementShedRate}
+              min={0}
+              max={1.0}
+              step={0.02}
+              onChange={(value) => setEnergyDisplacementShedRate(value[0])}
+            />
+
+            <SliderLabel
+              label="Energy Shed Factor"
+              value={energyShedFactor}
+              min={0.1}
+              max={2.0}
+              step={0.1}
+              onChange={(value) => setEnergyShedFactor(value[0])}
             />
 
             <SliderLabel
