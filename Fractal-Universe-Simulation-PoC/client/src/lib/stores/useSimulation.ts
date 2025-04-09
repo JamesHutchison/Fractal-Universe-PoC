@@ -19,6 +19,7 @@ interface SimulationState {
   spacetimePressureMultiplier: number;
   showGrid: boolean;
   showVelocityVectors: boolean;
+  showTimeEffects: number;
   isPaused: boolean;
 
   forwardDisplacementFactor: number;
@@ -54,6 +55,7 @@ interface SimulationState {
   setShowGrid: (show: boolean) => void;
   setShowVelocityVectors: (show: boolean) => void;
   setForwardDisplacementFactor: (factor: number) => void;
+  setShowTimeEffects: (show: number) => void;
   togglePause: () => void;
 
   addEnergy: (energy: Partial<Energy>) => void;
@@ -106,6 +108,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
     timeFactor: 1.0,
+    showTimeEffects: 1,
   };
   // Initialize the grid cells
   const initializeGrid = (size: number): GridCell[] => {
@@ -156,6 +159,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
     setDirectionMode: (mode) => set({ directionMode: mode }),
     setTimeFactor: (factor) => set({ timeFactor: factor }),
+    setShowTimeEffects: (show) => set({ showTimeEffects: show }),
 
     // Energy management
     addEnergy: (energy) => {

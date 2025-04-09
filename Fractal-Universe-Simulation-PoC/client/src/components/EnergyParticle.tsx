@@ -9,7 +9,7 @@ interface EnergyParticleProps {
 }
 
 export default function EnergyParticle({ energy }: EnergyParticleProps) {
-  const { energySize, showVelocityVectors } = useSimulation();
+  const { energySize, showVelocityVectors, showTimeEffects } = useSimulation();
   const energyRef = useRef<THREE.Mesh>(null);
 
   // Create a ref for the velocity arrow
@@ -58,7 +58,12 @@ export default function EnergyParticle({ energy }: EnergyParticleProps) {
 
   // Create color gradient from blue to red based on speed
   const hue = Math.max(0, Math.min(240 - speed * 20, 240));
-  const color = new THREE.Color(`hsl(${hue}, 100%, 50%)`);
+  let color;
+  if (showTimeEffects) {
+    color = new THREE.Color(`hsl(${hue}, 100%, 50%)`);
+  } else {
+    color = new THREE.Color(`hsl(0%, 100%, 50%)`);
+  }
 
   return (
     <group>
