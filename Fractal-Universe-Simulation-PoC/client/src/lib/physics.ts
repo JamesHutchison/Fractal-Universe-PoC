@@ -40,11 +40,11 @@ export function calculateDisplacement(
 
   return {
     x:
-      normVx * magnitude * Math.pow(size, 2) * forwardFactor * forwardFactor -
+      normVx * magnitude * Math.pow(size, 2) * Math.pow(forwardFactor, 2) -
       lateralX * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
       skewX,
     y:
-      normVy * magnitude * Math.pow(size, 2) * forwardFactor * forwardFactor -
+      normVy * magnitude * Math.pow(size, 2) * Math.pow(forwardFactor, 2) -
       lateralY * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
       skewY,
   };
