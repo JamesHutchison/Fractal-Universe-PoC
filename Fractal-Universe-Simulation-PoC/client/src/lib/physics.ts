@@ -138,16 +138,20 @@ export function calculateEnergyRedirection(
       const magnitudeRatio = dispDiffMag / velMag;
 
       // Combine alignment and magnitude for time scaling
-      timeScale = alignment * magnitudeRatio;
+      if (timeFactor >= 2) {
+        timeScale = 1 + (Math.pow(alignment * magnitudeRatio * (timeFactor - 1), Math.min(2, timeFactor)) * Math.sign(alignment));
+      } else {
+        timeScale = 1 + alignment * magnitudeRatio * timeFactor;
+      }
 
       // Apply time factor with 0 as the neutral point
-      scale *= (1 + timeScale * timeFactor);
+      scale *= timeScale;
     }
   }
 
   return {
     vector: {x: redirVec.x * scale,
     y: redirVec.y * scale},
-    timeScale: Math.min(1, Math.abs(timeScale * timeFactor)),
+    timeScale: Math.min(1, Math.abs(timeScale)),
   };
 }

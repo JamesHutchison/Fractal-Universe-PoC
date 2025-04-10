@@ -175,6 +175,7 @@ export default function SimulationControls() {
               step={0.5}
               onChange={(value) => setTimeFactor(value[0])}
             />
+            <div>{timeFactor < 2 ? "Linear time effects" : "Squared time effects"} </div>
 
             <SliderLabel
               label="Show Time Effects"
