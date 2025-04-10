@@ -32,21 +32,16 @@ export function calculateDisplacement(
 
   const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / distance;
 
-  const skewX = 0;
-  const skewY = 0;
-
   const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
   const sideFactor = (1 - forwardFactor);
 
   return {
     x:
-      normVx * magnitude * Math.pow(size, 2) * Math.pow(forwardFactor, 2) -
-      lateralX * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
-      skewX,
+      (normVx * Math.pow(forwardFactor, 2) - lateralX * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2),
     y:
-      normVy * magnitude * Math.pow(size, 2) * Math.pow(forwardFactor, 2) -
-      lateralY * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
-      skewY,
+      (normVy * Math.pow(forwardFactor, 2) - lateralY * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2),
   };
 }
 
