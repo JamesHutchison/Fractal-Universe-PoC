@@ -385,36 +385,9 @@ export const useSimulation = create<SimulationState>((set, get) => {
           }
         }
 
-        // Scale based on how much the redirection changed the velocity
-        // const newSpeed = Math.sqrt(
-        //   updatedEnergy.velocity.x * updatedEnergy.velocity.x +
-        //     updatedEnergy.velocity.y * updatedEnergy.velocity.y,
-        // );
-
-        // const speedScale = newSpeed / energySpeed;
-
         // Apply final position update, allowing the stretch/squish to affect distance
         updatedEnergy.position.x += updatedEnergy.velocity.x * deltaTime;
         updatedEnergy.position.y += updatedEnergy.velocity.y * deltaTime;
-
-        // without this - get speed of light
-        // with this - get orbits
-        // Normalize velocity to maintain constant speed
-        // const speed = Math.sqrt(
-        //   updatedEnergy.velocity.x * updatedEnergy.velocity.x +
-        //     updatedEnergy.velocity.y * updatedEnergy.velocity.y,
-        // );
-
-        // if (speed > 0) {
-        //   updatedEnergy.velocity.x =
-        //     (updatedEnergy.velocity.x / speed) * energySpeed;
-        //   updatedEnergy.velocity.y =
-        //     (updatedEnergy.velocity.y / speed) * energySpeed;
-        // }
-
-        // // Update position based on velocity
-        // updatedEnergy.position.x += updatedEnergy.velocity.x * deltaTime;
-        // updatedEnergy.position.y += updatedEnergy.velocity.y * deltaTime;
 
         // Wrap around grid boundaries
         if (updatedEnergy.position.x < -halfSize) {
@@ -435,102 +408,6 @@ export const useSimulation = create<SimulationState>((set, get) => {
       // Update state with new energies
       set({ energies: updatedEnergies });
     },
-
-    // updateGridDisplacement: (deltaTime) => {
-    //   const {
-    //     gridCells,
-    //     gridSize,
-    //     energies,
-    //     displacementStrength,
-    //     propagationRate,
-    //     falloffRate,
-    //     spacetimePressure,
-    //   } = get();
-
-    //   const updatedGrid = [...gridCells];
-    //   const halfSize = gridSize / 2;
-
-    //   energies.forEach((energy) => {
-    //     const gridX = Math.floor(energy.position.x + halfSize);
-    //     const gridY = Math.floor(energy.position.y + halfSize);
-
-    //     for (
-    //       let y = Math.max(0, gridY - 3);
-    //       y <= Math.min(gridSize - 1, gridY + 3);
-    //       y++
-    //     ) {
-    //       for (
-    //         let x = Math.max(0, gridX - 3);
-    //         x <= Math.min(gridSize - 1, gridX + 3);
-    //         x++
-    //       ) {
-    //         const index = y * gridSize + x;
-    //         const distance = Math.sqrt(
-    //           Math.pow(x - gridX, 2) + Math.pow(y - gridY, 2)
-    //         );
-
-    //         if (distance > 7) continue;
-
-    //         const displacement = calculateDisplacement(
-    //           energy.velocity,
-    //           distance,
-    //           displacementStrength,
-    //           falloffRate,
-    //           energy.size
-    //         );
-
-    //         updatedGrid[index].displacement.x += displacement.x * deltaTime;
-    //         updatedGrid[index].displacement.y += displacement.y * deltaTime;
-    //       }
-    //     }
-    //   });
-
-    //   const gridCopy = [...updatedGrid];
-
-    //   if (propagationRate > 0) {
-    //     for (let y = 1; y < gridSize - 1; y++) {
-    //       for (let x = 1; x < gridSize - 1; x++) {
-    //         const idx = y * gridSize + x;
-
-    //         const above = (y - 1) * gridSize + x;
-    //         const below = (y + 1) * gridSize + x;
-    //         const left = y * gridSize + (x - 1);
-    //         const right = y * gridSize + (x + 1);
-
-    //         const avgDisplacementX =
-    //           (gridCopy[above].displacement.x +
-    //             gridCopy[below].displacement.x +
-    //             gridCopy[left].displacement.x +
-    //             gridCopy[right].displacement.x) /
-    //           4;
-
-    //         const avgDisplacementY =
-    //           (gridCopy[above].displacement.y +
-    //             gridCopy[below].displacement.y +
-    //             gridCopy[left].displacement.y +
-    //             gridCopy[right].displacement.y) /
-    //           4;
-
-    //         updatedGrid[idx].displacement.x +=
-    //           (avgDisplacementX - gridCopy[idx].displacement.x) *
-    //           propagationRate *
-    //           deltaTime;
-
-    //         updatedGrid[idx].displacement.y +=
-    //           (avgDisplacementY - gridCopy[idx].displacement.y) *
-    //           propagationRate *
-    //           deltaTime;
-    //       }
-    //     }
-    //   }
-
-    //   for (let i = 0; i < updatedGrid.length; i++) {
-    //     const d = updatedGrid[i].displacement;
-    //     const magnitude = Math.hypot(d.x, d.y);
-    //     const damping = 1 / (1 + magnitude / 1.4);
-    //     d.x *= damping;
-    //     d.y *= damping;
-    //   }
 
     updateGridDisplacement: (deltaTime) => {
       const {
