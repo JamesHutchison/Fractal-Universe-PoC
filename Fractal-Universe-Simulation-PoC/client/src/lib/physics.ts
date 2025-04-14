@@ -125,21 +125,21 @@ export function calculateEnergyRedirection(
 
     const dispDiffMag = Math.hypot(dispDiff.x, dispDiff.y);
     if (dispDiffMag > 0.01) {
+      // Calculate magnitude ratio using displacement difference
+      const magnitudeRatio = dispDiffMag / velMag;
+
       // Normalize displacement difference
       const normDispDiff = {
         x: dispDiff.x / dispDiffMag,
         y: dispDiff.y / dispDiffMag,
       };
 
-      // Calculate alignment between velocity and displacement difference
+      // Calculate alignment between velocity and displacement difference via dot product
       const alignment = (normDispDiff.x * normVel.x + normDispDiff.y * normVel.y);
-
-      // Calculate magnitude ratio using displacement difference
-      const magnitudeRatio = dispDiffMag / velMag;
 
       // Combine alignment and magnitude for time scaling
       if (timeFactor >= 2) {
-        timeScale = 1 + (Math.pow(alignment * magnitudeRatio * (timeFactor - 1), Math.min(2, timeFactor)) * Math.sign(alignment));
+        timeScale = 1 + (Math.pow(alignment * magnitudeRatio * (timeFactor - 1), 2) * Math.sign(alignment));
       } else {
         timeScale = 1 + alignment * magnitudeRatio * timeFactor;
       }
