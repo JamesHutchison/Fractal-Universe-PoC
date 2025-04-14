@@ -373,7 +373,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
 
             // energy shedding
 
-            if (energyBaseShedRate && energyDisplacementShedRate) {
+            if (energyBaseShedRate || energyDisplacementShedRate) {
               // shed is allowed to go negative
               const shed = (energyBaseShedRate + (displacementMagnitudeDifference) * energyDisplacementShedRate) * deltaTime;
               const shedFactor = 0.1 * energyShedFactor * Math.pow(1 + updatedEnergy.size, 2 * shed);
