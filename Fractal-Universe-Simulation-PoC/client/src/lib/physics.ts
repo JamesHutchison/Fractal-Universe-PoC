@@ -61,7 +61,7 @@ export function calculateEnergyRedirection(
   timeFactor: number = 1,
 ): Vector2WithScale {
   const dispMag = Math.hypot(displacement.x, displacement.y);
-  if (dispMag < 0.01) return { vector: velocity, timeScale: 1 };
+  if (dispMag < 0.01 && parentFieldSkew === 0.0) return { vector: velocity, timeScale: 1 };
 
   const velMag = Math.hypot(velocity.x, velocity.y);
   if (velMag < 0.01) return { vector: velocity, timeScale: 1 };
