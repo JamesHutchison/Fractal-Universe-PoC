@@ -36,8 +36,8 @@ export default function SimulationControls() {
     setShowGrid,
     showVelocityVectors,
     setShowVelocityVectors,
-    forwardDisplacementFactor,
-    setForwardDisplacementFactor,
+    lateralDisplacementFactor,
+    setLateralDisplacementFactor,
     parentFieldSkew,
     setParentFieldSkew,
     timeFactor,
@@ -127,12 +127,12 @@ export default function SimulationControls() {
             />
 
             <SliderLabel
-              label="Forward Resistance"
-              value={forwardDisplacementFactor}
+              label="Lateral Displacement Factor"
+              value={lateralDisplacementFactor}
               min={0}
               max={10}
               step={0.05}
-              onChange={(value) => setForwardDisplacementFactor(value[0])}
+              onChange={(value) => setLateralDisplacementFactor(value[0])}
             />
 
             <SliderLabel

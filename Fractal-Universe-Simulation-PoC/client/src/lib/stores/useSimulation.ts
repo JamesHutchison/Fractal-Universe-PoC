@@ -22,7 +22,7 @@ interface SimulationState {
   showTimeEffects: number;
   isPaused: boolean;
 
-  forwardDisplacementFactor: number;
+  lateralDisplacementFactor: number;
   curDirectionIndex: number;
   incrementCurrentDirectionIndex: () => void;
 
@@ -54,7 +54,7 @@ interface SimulationState {
   setSpacetimePressureMultiplier: (multiplier: number) => void;
   setShowGrid: (show: boolean) => void;
   setShowVelocityVectors: (show: boolean) => void;
-  setForwardDisplacementFactor: (factor: number) => void;
+  setLateralDisplacementFactor: (factor: number) => void;
   setShowTimeEffects: (show: number) => void;
   togglePause: () => void;
 
@@ -104,7 +104,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     showGrid: true,
     showVelocityVectors: false,
     isPaused: false,
-    forwardDisplacementFactor: 1.0,
+    lateralDisplacementFactor: 1.0,
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
     timeFactor: 1.0,
@@ -153,8 +153,8 @@ export const useSimulation = create<SimulationState>((set, get) => {
     setShowGrid: (show) => set({ showGrid: show }),
     setEnergySteerFactor: (factor) => set({ energySteerFactor: factor }),
     setShowVelocityVectors: (show) => set({ showVelocityVectors: show }),
-    setForwardDisplacementFactor: (factor) =>
-      set({ forwardDisplacementFactor: factor }),
+    setLateralDisplacementFactor: (factor) =>
+      set({ lateralDisplacementFactor: factor }),
     togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
     setDirectionMode: (mode) => set({ directionMode: mode }),
@@ -262,7 +262,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         energies,
         gridSize,
         gridCells,
-        forwardDisplacementFactor,
+        lateralDisplacementFactor,
         parentFieldSkew,
         timeFactor,
         energyBaseShedRate,
@@ -356,7 +356,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               normalizedVelocity,
               cell.displacement,
               nextCellDisplacement,
-              forwardDisplacementFactor,
+              lateralDisplacementFactor,
               energy.steerFactor,
               energy.size,
               parentFieldSkew,
@@ -419,7 +419,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         falloffRate,
         spacetimePressure,
         spacetimePressureMultiplier,
-        forwardDisplacementFactor,
+        lateralDisplacementFactor,
       } = get();
 
       // Create a copy of the grid cells
@@ -463,7 +463,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               displacementStrength,
               falloffRate,
               energy.size,
-              forwardDisplacementFactor,
+              lateralDisplacementFactor,
             );
 
             const existing = updatedGrid[index].displacement;

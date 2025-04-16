@@ -7,7 +7,7 @@ export function calculateDisplacement(
   strength: number,
   falloff: number,
   size: number,
-  forwardDisplacementFactor: number,
+  lateralDisplacementFactor: number,
 ): Vector2 {
   if (distance == 0) return { x: 0, y: 0 };
   const safeDist = Math.max(0.2, distance);
@@ -32,7 +32,7 @@ export function calculateDisplacement(
 
   const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / distance;
 
-  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
+  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * lateralDisplacementFactor);
   const sideFactor = (1 - forwardFactor);
 
   return {
@@ -54,7 +54,7 @@ export function calculateEnergyRedirection(
   velocity: Vector2,
   displacement: Vector2,
   nextCellDisplacement: Vector2,
-  forwardDisplacementFactor: number = 0.0,
+  lateralDisplacementFactor: number = 0.0,
   steerFactor: number = 0.2,
   energySize: number = 1,
   parentFieldSkew: number = 0.0,
@@ -71,11 +71,7 @@ export function calculateEnergyRedirection(
     y: velocity.y / velMag,
   };
 
-  // Calculate base skew direction (perpendicular to velocity)
-  const skewVec = {
-    x: -normVel.y,
-    y: normVel.x
-  };
+
 
   const forwardDot = displacement.x * normVel.x + displacement.y * normVel.y;
 
@@ -84,15 +80,10 @@ export function calculateEnergyRedirection(
     y: normVel.y * forwardDot,
   };
 
-  const lateralVec = {
-    x: displacement.x - forwardVec.x,
-    y: displacement.y - forwardVec.y,
-  };
-
   const displacementRatio = Math.max(0.0001, forwardDot);
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
-  const forwardResistance = Math.pow(forwardDisplacementFactor, 2) * inverseResistance;
+  const forwardResistance = Math.pow(lateralDisplacementFactor, 2) * inverseResistance;
 
   const adjustedForward = {
     x: forwardVec.x * (1 - forwardResistance),
@@ -100,10 +91,18 @@ export function calculateEnergyRedirection(
   };
 
   // Apply skew to lateral movement
-  const skewAmount = parentFieldSkew;
+  const lateralVec = {
+    x: displacement.x - forwardVec.x,
+    y: displacement.y - forwardVec.y,
+  };
+  // Calculate base skew direction (perpendicular to velocity)
+  const skewVec = {
+    x: -normVel.y,
+    y: normVel.x
+  };
   const adjustedDisplacement = {
-    x: adjustedForward.x + (lateralVec.x) + (skewVec.x * skewAmount),
-    y: adjustedForward.y + (lateralVec.y) + (skewVec.y * skewAmount),
+    x: adjustedForward.x + (lateralVec.x) + (skewVec.x * parentFieldSkew),
+    y: adjustedForward.y + (lateralVec.y) + (skewVec.y * parentFieldSkew),
   };
 
   const redirVec = {
