@@ -32,49 +32,10 @@ export function calculateDisplacement(
 
   const lateralComponent = (offsetX * lateralX + offsetY * lateralY);
 
-  // spacetime setting
-  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / 6))));
-  // const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
-
-  // return {
-  //   x:
-  //     (normVx * (1 + forwardComponent) * forwardFactor - lateralX * lateralComponent * sideFactor)
-  //     * magnitude * Math.pow(size, 2),
-  //   y:
-  //     (normVy * (1 + forwardComponent) * forwardFactor - lateralY * lateralComponent * sideFactor)
-  //     * magnitude * Math.pow(size, 2),
-  // };
-
-  // biological setting
-  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / 6)))) * lateralDisplacementFactor;
-  // const sideFactor = (1 - forwardFactor);
-
-  // return {
-  //   x:
-  //     (normVx * forwardComponent + Math.pow(forwardFactor, 2) - lateralX * lateralComponent * sideFactor)
-  //     * magnitude * Math.pow(size, 2),
-  //   y:
-  //     (normVy * forwardComponent + Math.pow(forwardFactor, 2) - lateralY * lateralComponent * sideFactor)
-  //     * magnitude * Math.pow(size, 2),
-  // };
-  // const displacementSizeFactor = 1;
-  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (displacementSizeFactor / size))));
-  // const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
-
-  // const distanceSquared = Math.pow(distance, 2);
-  // return {
-  //   x:
-  //     ((normVx * forwardComponent * forwardFactor - lateralX * lateralComponent * sideFactor)
-  //     * (magnitude) * Math.pow(size, 2)) / distanceSquared,
-  //   y:
-  //     ((normVy * forwardComponent * forwardFactor - lateralY * lateralComponent * sideFactor)
-  //     * (magnitude) * Math.pow(size, 2)) / distanceSquared,
-  // };
   const displacementSizeFactor = 3;
   const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / (displacementSizeFactor * lateralDisplacementFactor)))));
   const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
 
-  // const distanceSquared = Math.pow(distance, 2);
   return {
     x:
       ((normVx * (forwardComponent) * forwardFactor - lateralX * lateralComponent * sideFactor)
