@@ -11,7 +11,7 @@ export function calculateDisplacement(
 ): Vector2 {
   if (distance == 0) return { x: 0, y: 0 };
   const safeDist = Math.max(0.2, distance);
-  const falloffFactor = 1 / (1 + (safeDist * (falloff + 0.01)));
+  const falloffFactor = 1 / (1 + (Math.pow(safeDist, 2) * (falloff + 0.01)));
 
   const magnitude = Math.pow(strength, 2) * falloffFactor;
 
@@ -27,21 +27,61 @@ export function calculateDisplacement(
   const offsetX = offset.x;
   const offsetY = offset.y;
 
-  const forwardComponent = (offsetX * normVx + offsetY * normVy) / distance;
+  const forwardComponent = (offsetX * normVx + offsetY * normVy);
   if (forwardComponent < 0) return { x: 0, y: 0 };
 
-  const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / distance;
+  const lateralComponent = (offsetX * lateralX + offsetY * lateralY);
 
-  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * lateralDisplacementFactor);
-  const sideFactor = (1 - forwardFactor);
+  // spacetime setting
+  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / 6))));
+  // const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
 
+  // return {
+  //   x:
+  //     (normVx * (1 + forwardComponent) * forwardFactor - lateralX * lateralComponent * sideFactor)
+  //     * magnitude * Math.pow(size, 2),
+  //   y:
+  //     (normVy * (1 + forwardComponent) * forwardFactor - lateralY * lateralComponent * sideFactor)
+  //     * magnitude * Math.pow(size, 2),
+  // };
+
+  // biological setting
+  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / 6)))) * lateralDisplacementFactor;
+  // const sideFactor = (1 - forwardFactor);
+
+  // return {
+  //   x:
+  //     (normVx * forwardComponent + Math.pow(forwardFactor, 2) - lateralX * lateralComponent * sideFactor)
+  //     * magnitude * Math.pow(size, 2),
+  //   y:
+  //     (normVy * forwardComponent + Math.pow(forwardFactor, 2) - lateralY * lateralComponent * sideFactor)
+  //     * magnitude * Math.pow(size, 2),
+  // };
+  // const displacementSizeFactor = 1;
+  // const forwardFactor = (Math.max(0.15, Math.min(0.8, (displacementSizeFactor / size))));
+  // const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
+
+  // const distanceSquared = Math.pow(distance, 2);
+  // return {
+  //   x:
+  //     ((normVx * forwardComponent * forwardFactor - lateralX * lateralComponent * sideFactor)
+  //     * (magnitude) * Math.pow(size, 2)) / distanceSquared,
+  //   y:
+  //     ((normVy * forwardComponent * forwardFactor - lateralY * lateralComponent * sideFactor)
+  //     * (magnitude) * Math.pow(size, 2)) / distanceSquared,
+  // };
+  const displacementSizeFactor = 3;
+  const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / (displacementSizeFactor * lateralDisplacementFactor)))));
+  const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
+
+  // const distanceSquared = Math.pow(distance, 2);
   return {
     x:
-      (normVx * Math.pow(forwardFactor, 2) - lateralX * lateralComponent * sideFactor)
-      * magnitude * Math.pow(size, 2),
+      ((normVx * (forwardComponent) * forwardFactor - lateralX * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2)),
     y:
-      (normVy * Math.pow(forwardFactor, 2) - lateralY * lateralComponent * sideFactor)
-      * magnitude * Math.pow(size, 2),
+      ((normVy * (forwardComponent) * forwardFactor - lateralY * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2)),
   };
 }
 
@@ -83,7 +123,7 @@ export function calculateEnergyRedirection(
   const displacementRatio = Math.max(0.0001, forwardDot);
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
-  const forwardResistance = Math.pow(lateralDisplacementFactor, 2) * inverseResistance;
+  const forwardResistance = Math.max(1, Math.pow(lateralDisplacementFactor, 2) * inverseResistance);
 
   const adjustedForward = {
     x: forwardVec.x * (1 - forwardResistance),
