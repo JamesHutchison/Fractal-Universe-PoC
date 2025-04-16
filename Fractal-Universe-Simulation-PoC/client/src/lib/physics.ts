@@ -84,7 +84,7 @@ export function calculateEnergyRedirection(
   const displacementRatio = Math.max(0.0001, forwardDot);
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
-  const forwardResistance = Math.max(1, Math.pow(lateralDisplacementFactor, 2) * inverseResistance);
+  const forwardResistance = Math.min(1, Math.pow(lateralDisplacementFactor, 2) * inverseResistance);
 
   const adjustedForward = {
     x: forwardVec.x * (1 - forwardResistance),
