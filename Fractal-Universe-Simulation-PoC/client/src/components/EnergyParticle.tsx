@@ -57,7 +57,7 @@ export default function EnergyParticle({ energy }: EnergyParticleProps) {
   );
 
   // Create color gradient from blue to red based on speed
-  const hue = Math.max(0, Math.min(240 - speed * 20, 240));
+  const hue = Math.max(0, Math.min(120 - speed * 20, 240));
   let color;
   if (showTimeEffects) {
     color = new THREE.Color(`hsl(${hue}, 100%, 50%)`);

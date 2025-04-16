@@ -22,7 +22,7 @@ interface SimulationState {
   showTimeEffects: number;
   isPaused: boolean;
 
-  forwardDisplacementFactor: number;
+  lateralDisplacementFactor: number;
   curDirectionIndex: number;
   incrementCurrentDirectionIndex: () => void;
 
@@ -54,7 +54,7 @@ interface SimulationState {
   setSpacetimePressureMultiplier: (multiplier: number) => void;
   setShowGrid: (show: boolean) => void;
   setShowVelocityVectors: (show: boolean) => void;
-  setForwardDisplacementFactor: (factor: number) => void;
+  setLateralDisplacementFactor: (factor: number) => void;
   setShowTimeEffects: (show: number) => void;
   togglePause: () => void;
 
@@ -104,7 +104,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
     showGrid: true,
     showVelocityVectors: false,
     isPaused: false,
-    forwardDisplacementFactor: 1.0,
+    lateralDisplacementFactor: 1.0,
     parentFieldSkew: 0,
     directionMode: 'cycle' as const,
     timeFactor: 1.0,
@@ -153,8 +153,8 @@ export const useSimulation = create<SimulationState>((set, get) => {
     setShowGrid: (show) => set({ showGrid: show }),
     setEnergySteerFactor: (factor) => set({ energySteerFactor: factor }),
     setShowVelocityVectors: (show) => set({ showVelocityVectors: show }),
-    setForwardDisplacementFactor: (factor) =>
-      set({ forwardDisplacementFactor: factor }),
+    setLateralDisplacementFactor: (factor) =>
+      set({ lateralDisplacementFactor: factor }),
     togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
     setParentFieldSkew: (skew) => set({ parentFieldSkew: skew }),
     setDirectionMode: (mode) => set({ directionMode: mode }),
@@ -262,7 +262,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         energies,
         gridSize,
         gridCells,
-        forwardDisplacementFactor,
+        lateralDisplacementFactor,
         parentFieldSkew,
         timeFactor,
         energyBaseShedRate,
@@ -356,7 +356,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               normalizedVelocity,
               cell.displacement,
               nextCellDisplacement,
-              forwardDisplacementFactor,
+              lateralDisplacementFactor,
               energy.steerFactor,
               energy.size,
               parentFieldSkew,
@@ -373,7 +373,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
 
             // energy shedding
 
-            if (energyBaseShedRate && energyDisplacementShedRate) {
+            if (energyBaseShedRate || energyDisplacementShedRate) {
               // shed is allowed to go negative
               const shed = (energyBaseShedRate + (displacementMagnitudeDifference) * energyDisplacementShedRate) * deltaTime;
               const shedFactor = 0.1 * energyShedFactor * Math.pow(1 + updatedEnergy.size, 2 * shed);
@@ -385,36 +385,9 @@ export const useSimulation = create<SimulationState>((set, get) => {
           }
         }
 
-        // Scale based on how much the redirection changed the velocity
-        // const newSpeed = Math.sqrt(
-        //   updatedEnergy.velocity.x * updatedEnergy.velocity.x +
-        //     updatedEnergy.velocity.y * updatedEnergy.velocity.y,
-        // );
-
-        // const speedScale = newSpeed / energySpeed;
-
         // Apply final position update, allowing the stretch/squish to affect distance
         updatedEnergy.position.x += updatedEnergy.velocity.x * deltaTime;
         updatedEnergy.position.y += updatedEnergy.velocity.y * deltaTime;
-
-        // without this - get speed of light
-        // with this - get orbits
-        // Normalize velocity to maintain constant speed
-        // const speed = Math.sqrt(
-        //   updatedEnergy.velocity.x * updatedEnergy.velocity.x +
-        //     updatedEnergy.velocity.y * updatedEnergy.velocity.y,
-        // );
-
-        // if (speed > 0) {
-        //   updatedEnergy.velocity.x =
-        //     (updatedEnergy.velocity.x / speed) * energySpeed;
-        //   updatedEnergy.velocity.y =
-        //     (updatedEnergy.velocity.y / speed) * energySpeed;
-        // }
-
-        // // Update position based on velocity
-        // updatedEnergy.position.x += updatedEnergy.velocity.x * deltaTime;
-        // updatedEnergy.position.y += updatedEnergy.velocity.y * deltaTime;
 
         // Wrap around grid boundaries
         if (updatedEnergy.position.x < -halfSize) {
@@ -436,102 +409,6 @@ export const useSimulation = create<SimulationState>((set, get) => {
       set({ energies: updatedEnergies });
     },
 
-    // updateGridDisplacement: (deltaTime) => {
-    //   const {
-    //     gridCells,
-    //     gridSize,
-    //     energies,
-    //     displacementStrength,
-    //     propagationRate,
-    //     falloffRate,
-    //     spacetimePressure,
-    //   } = get();
-
-    //   const updatedGrid = [...gridCells];
-    //   const halfSize = gridSize / 2;
-
-    //   energies.forEach((energy) => {
-    //     const gridX = Math.floor(energy.position.x + halfSize);
-    //     const gridY = Math.floor(energy.position.y + halfSize);
-
-    //     for (
-    //       let y = Math.max(0, gridY - 3);
-    //       y <= Math.min(gridSize - 1, gridY + 3);
-    //       y++
-    //     ) {
-    //       for (
-    //         let x = Math.max(0, gridX - 3);
-    //         x <= Math.min(gridSize - 1, gridX + 3);
-    //         x++
-    //       ) {
-    //         const index = y * gridSize + x;
-    //         const distance = Math.sqrt(
-    //           Math.pow(x - gridX, 2) + Math.pow(y - gridY, 2)
-    //         );
-
-    //         if (distance > 7) continue;
-
-    //         const displacement = calculateDisplacement(
-    //           energy.velocity,
-    //           distance,
-    //           displacementStrength,
-    //           falloffRate,
-    //           energy.size
-    //         );
-
-    //         updatedGrid[index].displacement.x += displacement.x * deltaTime;
-    //         updatedGrid[index].displacement.y += displacement.y * deltaTime;
-    //       }
-    //     }
-    //   });
-
-    //   const gridCopy = [...updatedGrid];
-
-    //   if (propagationRate > 0) {
-    //     for (let y = 1; y < gridSize - 1; y++) {
-    //       for (let x = 1; x < gridSize - 1; x++) {
-    //         const idx = y * gridSize + x;
-
-    //         const above = (y - 1) * gridSize + x;
-    //         const below = (y + 1) * gridSize + x;
-    //         const left = y * gridSize + (x - 1);
-    //         const right = y * gridSize + (x + 1);
-
-    //         const avgDisplacementX =
-    //           (gridCopy[above].displacement.x +
-    //             gridCopy[below].displacement.x +
-    //             gridCopy[left].displacement.x +
-    //             gridCopy[right].displacement.x) /
-    //           4;
-
-    //         const avgDisplacementY =
-    //           (gridCopy[above].displacement.y +
-    //             gridCopy[below].displacement.y +
-    //             gridCopy[left].displacement.y +
-    //             gridCopy[right].displacement.y) /
-    //           4;
-
-    //         updatedGrid[idx].displacement.x +=
-    //           (avgDisplacementX - gridCopy[idx].displacement.x) *
-    //           propagationRate *
-    //           deltaTime;
-
-    //         updatedGrid[idx].displacement.y +=
-    //           (avgDisplacementY - gridCopy[idx].displacement.y) *
-    //           propagationRate *
-    //           deltaTime;
-    //       }
-    //     }
-    //   }
-
-    //   for (let i = 0; i < updatedGrid.length; i++) {
-    //     const d = updatedGrid[i].displacement;
-    //     const magnitude = Math.hypot(d.x, d.y);
-    //     const damping = 1 / (1 + magnitude / 1.4);
-    //     d.x *= damping;
-    //     d.y *= damping;
-    //   }
-
     updateGridDisplacement: (deltaTime) => {
       const {
         gridCells,
@@ -542,7 +419,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
         falloffRate,
         spacetimePressure,
         spacetimePressureMultiplier,
-        forwardDisplacementFactor,
+        lateralDisplacementFactor,
       } = get();
 
       // Create a copy of the grid cells
@@ -586,7 +463,7 @@ export const useSimulation = create<SimulationState>((set, get) => {
               displacementStrength,
               falloffRate,
               energy.size,
-              forwardDisplacementFactor,
+              lateralDisplacementFactor,
             );
 
             const existing = updatedGrid[index].displacement;

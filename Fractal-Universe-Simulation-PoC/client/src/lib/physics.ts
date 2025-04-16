@@ -7,10 +7,12 @@ export function calculateDisplacement(
   strength: number,
   falloff: number,
   size: number,
-  forwardDisplacementFactor: number,
+  lateralDisplacementFactor: number,
 ): Vector2 {
+  if (distance == 0) return { x: 0, y: 0 };
   const safeDist = Math.max(0.2, distance);
-  const falloffFactor = 1 / (1 + (safeDist * (falloff + 0.01)));
+  const falloffFactor = 1 / (1 + (Math.pow(safeDist, 2) * (falloff + 0.01)));
+
   const magnitude = Math.pow(strength, 2) * falloffFactor;
 
   const speed = Math.hypot(velocity.x, velocity.y);
@@ -25,37 +27,22 @@ export function calculateDisplacement(
   const offsetX = offset.x;
   const offsetY = offset.y;
 
-  const offsetMag = Math.hypot(offsetX, offsetY);
-  if (offsetMag < 0.001) return { x: 0, y: 0 };
-
-  const forwardComponent = (offsetX * normVx + offsetY * normVy) / offsetMag;
+  const forwardComponent = (offsetX * normVx + offsetY * normVy);
   if (forwardComponent < 0) return { x: 0, y: 0 };
 
-  const lateralComponent = (offsetX * lateralX + offsetY * lateralY) / offsetMag;
+  const lateralComponent = (offsetX * lateralX + offsetY * lateralY);
 
-  // const forwardFactor = Math.max(0, forwardComponent);
-
-  // this exaggerated lateral rotation / skew to make up for no time effects but may be unneeded now that time is implemented
-  // const cross = normVx * offsetY - normVy * offsetX;
-  // const skewStrength = 0.314;
-  // const skewX = -Math.sign(cross) * lateralX * skewStrength;
-  // const skewY = -Math.sign(cross) * lateralY * skewStrength;
-  const skewX = 0;
-  const skewY = 0;
-
-  const forwardFactor = (Math.min(0.15, Math.max(0.8, (size / 6))) * forwardDisplacementFactor);
-  // const forwardFactor = 0.15;
-  const sideFactor = (1 - forwardFactor);
+  const displacementSizeFactor = 3;
+  const forwardFactor = (Math.max(0.15, Math.min(0.8, (size / (displacementSizeFactor * lateralDisplacementFactor)))));
+  const sideFactor = (1 - forwardFactor) * lateralDisplacementFactor;
 
   return {
     x:
-      normVx * magnitude * Math.pow(size, 2) * forwardFactor * forwardFactor -
-      lateralX * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
-      skewX,
+      ((normVx * (forwardComponent) * forwardFactor - lateralX * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2)),
     y:
-      normVy * magnitude * Math.pow(size, 2) * forwardFactor * forwardFactor -
-      lateralY * magnitude * Math.pow(size, 2) * lateralComponent * sideFactor +
-      skewY,
+      ((normVy * (forwardComponent) * forwardFactor - lateralY * lateralComponent * sideFactor)
+      * magnitude * Math.pow(size, 2)),
   };
 }
 
@@ -68,14 +55,14 @@ export function calculateEnergyRedirection(
   velocity: Vector2,
   displacement: Vector2,
   nextCellDisplacement: Vector2,
-  forwardDisplacementFactor: number = 0.0,
+  lateralDisplacementFactor: number = 0.0,
   steerFactor: number = 0.2,
   energySize: number = 1,
   parentFieldSkew: number = 0.0,
   timeFactor: number = 1,
 ): Vector2WithScale {
   const dispMag = Math.hypot(displacement.x, displacement.y);
-  if (dispMag < 0.01) return { vector: velocity, timeScale: 1 };
+  if (dispMag < 0.01 && parentFieldSkew === 0.0) return { vector: velocity, timeScale: 1 };
 
   const velMag = Math.hypot(velocity.x, velocity.y);
   if (velMag < 0.01) return { vector: velocity, timeScale: 1 };
@@ -85,12 +72,6 @@ export function calculateEnergyRedirection(
     y: velocity.y / velMag,
   };
 
-  // Calculate base skew direction (perpendicular to velocity)
-  const skewVec = {
-    x: -normVel.y,
-    y: normVel.x
-  };
-
   const forwardDot = displacement.x * normVel.x + displacement.y * normVel.y;
 
   const forwardVec = {
@@ -98,17 +79,10 @@ export function calculateEnergyRedirection(
     y: normVel.y * forwardDot,
   };
 
-  const lateralVec = {
-    x: displacement.x - forwardVec.x,
-    y: displacement.y - forwardVec.y,
-  };
-
-  // const baselineDisplacement = 1.0;
-  // const displacementRatio = dispMag / baselineDisplacement;
-  const displacementRatio = Math.max(0.0001, Math.max(0, forwardDot));
+  const displacementRatio = Math.max(0.0001, forwardDot);
 
   const inverseResistance = Math.min(1, 1 / displacementRatio);
-  const forwardResistance = Math.pow(forwardDisplacementFactor, 2) * inverseResistance;
+  const forwardResistance = Math.min(1, Math.pow(lateralDisplacementFactor, 2) * inverseResistance);
 
   const adjustedForward = {
     x: forwardVec.x * (1 - forwardResistance),
@@ -116,10 +90,18 @@ export function calculateEnergyRedirection(
   };
 
   // Apply skew to lateral movement
-  const skewAmount = parentFieldSkew;
+  const lateralVec = {
+    x: displacement.x - forwardVec.x,
+    y: displacement.y - forwardVec.y,
+  };
+  // Calculate base skew direction (perpendicular to velocity)
+  const skewVec = {
+    x: -normVel.y,
+    y: normVel.x
+  };
   const adjustedDisplacement = {
-    x: adjustedForward.x + (lateralVec.x) + (skewVec.x * skewAmount),
-    y: adjustedForward.y + (lateralVec.y) + (skewVec.y * skewAmount),
+    x: adjustedForward.x + (lateralVec.x) + (skewVec.x * parentFieldSkew),
+    y: adjustedForward.y + (lateralVec.y) + (skewVec.y * parentFieldSkew),
   };
 
   const redirVec = {
@@ -141,29 +123,33 @@ export function calculateEnergyRedirection(
 
     const dispDiffMag = Math.hypot(dispDiff.x, dispDiff.y);
     if (dispDiffMag > 0.01) {
+      // Calculate magnitude ratio using displacement difference
+      const magnitudeRatio = dispDiffMag / velMag;
+
       // Normalize displacement difference
       const normDispDiff = {
         x: dispDiff.x / dispDiffMag,
         y: dispDiff.y / dispDiffMag,
       };
 
-      // Calculate alignment between velocity and displacement difference
+      // Calculate alignment between velocity and displacement difference via dot product
       const alignment = (normDispDiff.x * normVel.x + normDispDiff.y * normVel.y);
 
-      // Calculate magnitude ratio using displacement difference
-      const magnitudeRatio = dispDiffMag / velMag;
-
       // Combine alignment and magnitude for time scaling
-      timeScale = alignment * magnitudeRatio;
+      if (timeFactor >= 2) {
+        timeScale = 1 + (Math.pow(alignment * magnitudeRatio * (timeFactor - 1), 2) * Math.sign(alignment));
+      } else {
+        timeScale = 1 + alignment * magnitudeRatio * timeFactor;
+      }
 
       // Apply time factor with 0 as the neutral point
-      scale *= (1 + timeScale * timeFactor);
+      scale *= timeScale;
     }
   }
 
   return {
     vector: {x: redirVec.x * scale,
     y: redirVec.y * scale},
-    timeScale: Math.min(1, Math.abs(timeScale * timeFactor)),
+    timeScale: Math.min(1, Math.abs(timeScale)),
   };
 }
