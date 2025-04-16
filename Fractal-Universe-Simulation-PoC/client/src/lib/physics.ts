@@ -72,8 +72,6 @@ export function calculateEnergyRedirection(
     y: velocity.y / velMag,
   };
 
-
-
   const forwardDot = displacement.x * normVel.x + displacement.y * normVel.y;
 
   const forwardVec = {
