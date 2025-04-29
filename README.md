@@ -4,32 +4,45 @@ Fractal Universe Proof-of-Concept
 
 Patent Pending
 
+This comes with a limited license. Please review the [LIMITED_LICENSE](LIMITED_LICENSE) file.
+
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-1.png)
 
 This is a Fractal Universe Simulation that runs as a web server. It is able to model a surprisingly large number of
-behavior in the Universe, giving strong credit to a fractal Universe theory.
+behavior in the Universe, giving strong evidence to a fractal pattern. Other behaviors can be inferred from
+the shape of spacetime displacement. In the future, an ideal simulator would be able to simulate photons,
+inducing charged particles, etc.
 
-The fractal universe simulator is based on a very simple theory:
+The fractal universe simulator is based on a simple theory:
 
-- The universe has two occupying states - spacetime, or energy
-- Energy moves through spacetime and displaces it. As it does so, it leaves remnants behind.
-- This displacement creates propagation waves. The propagation waves "heal" spacetime by pushing back (creates a pressure)
-- These propagation waves have a resonating frequency that dictate what energy sizes are "stable".
-- Energy constantly shrinks due to "shedding" and radiation. There's stuff smaller and weaker than a photon. This makes up the structure of spacetime.
-- The resonating frequency comes from larger bodies and everything can be abstracted through aggregation.
+- The Universe is a fractal
+- It consists of energy and spacetime. The structure of spacetime is set by energy
+- Energy is a structure of energy (recursive definition)
+- Energy displaces spacetime as it propagates through it
+- Spacetime steers energy
+- The lateral displacement of spacetime (or rather, the underlying energy) induces opposing spin. This spin becomes
+  particle properties such as charge, spin, etc.
 
-This is a theory I developed myself. A fractal universe theory isn't new, but I haven't encountered anyone attempting to describe a specific mechanism
-as I am doing here.
+From this, a continous stack of directed fields manifests. At different scales, aggregations, harmonics, and pressures
+emerge that create the field behavior.
 
-This also doubles as general purpose field simulator, in case you have the need for it.
+This is a theory I developed myself. A fractal universe theory isn't new, but I haven't encountered anyone attempting
+to describe a specific mechanism as I am doing here.
+
+This also doubles as general purpose directed field simulator, in case you have the need for it.
 
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-2.png)
 
-In my opinion this is crude and is intended to demonstrate the concept - much in the same way a petri dish and bacteria can demonstrate evolution.
+In my opinion this is crude and is intended to demonstrate the concept - much in the same way a petri dish and bacteria can demonstrate evolution. For example, you can only zoom in and out, and there's no way to paint fields, template energy structures, save presets, etc.
 
 ## How to Start
 
-If you already have a github account simply create a codespace, run the task "install dependencies", then run the run configuration "Debug npm run dev"
+If you already have a github account simply create a codespace.
+
+In VS Code:
+
+- Run the task "install dependencies"
+- Run the "run configuration" "Debug npm run dev"
 
 ## Usage
 
