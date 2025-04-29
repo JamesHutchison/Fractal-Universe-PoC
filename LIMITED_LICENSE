@@ -4,9 +4,16 @@ Copyright (c) 2025 James Hutchison
 
 Patent Pending
 
-Permission is granted to use and modify this software for personal and limited educational purposes only.
+Permission is granted to use and modify this software for personal and limited exploratory purposes only.
+
+You may use this software, for limited personal use, to explore the Universe's fractal pattern.
+
 Exceptions may be granted with expressed written permission. All derived work must
 prominantly give visible credit to the original author, James Hutchison.
+
+This license may change over time. Refer to https://github.com/JamesHutchison/Fractal-Universe-PoC
+for the latest version of this license, which may or may not be under the file LICENSE, LIMITED_LICENSE, or similarly
+named and obvious files. This file is https://github.com/JamesHutchison/Fractal-Universe-PoC/blob/main/LICENSE
 
 The following restrictions apply:
 
@@ -19,8 +26,11 @@ The following restrictions apply:
   product or service, including but not limited to app stores, subscription
   platforms, or SaaS offerings.
 - Educational use does not include publishing or distributing the software to
-  the public, whether for free or for a fee. Use in classroom settings or
-  personal study is permitted; redistribution is not.
+  the public, whether for free or for a fee.
+- Classroom and educational use is permitted without a paid license
+  until August 1st, 2025. You may have each student run each copy independently,
+  from the codebase (this), and host one instance for each student.
+  You may not host the application from a shared hosting DNS, provider, or similar.
 
 The above restrictions apply to all parties except the copyright holder, James Hutchison,
 who retains full rights to use, modify, distribute, host, and commercialize the software without limitation.
