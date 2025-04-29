@@ -4,7 +4,7 @@ Fractal Universe Proof-of-Concept
 
 Patent Pending
 
-This comes with a limited license. Please review the [LIMITED_LICENSE](LIMITED_LICENSE) file.
+This software comes with a limited license. Please review the [LIMITED_LICENSE](LIMITED_LICENSE) file.
 
 ![Fractal Universe Simulator Screenshot](images/simulator-screen-1.png)
 
